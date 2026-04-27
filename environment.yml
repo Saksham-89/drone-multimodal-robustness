@@ -1,0 +1,24 @@
+name: thesis
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.10
+  - pytorch>=2.0
+  - torchvision
+  - pytorch-cuda=11.8          # update to match EEMCS HPC CUDA version
+  - numpy
+  - pillow
+  - pyyaml
+  - tqdm
+  - matplotlib
+  - pandas
+  - jupyter
+  - pip
+  - pip:
+    - imagecorruptions          # corruption transforms (Michaelis et al.)
+    - mmcv-full                 # likely needed by model repos (check versions after cloning)
+    - mmdet

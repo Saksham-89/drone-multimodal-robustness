@@ -1,0 +1,12 @@
+model: ua_cmddet
+backbone: resnet50
+pretrained: imagenet
+
+data:
+  root: data/DroneVehicle
+  test_rgb: data/DroneVehicle/test/rgb
+  test_tir: data/DroneVehicle/test/ir
+  test_ann: data/DroneVehicle/test/annotations
+
+checkpoint: models/ua_cmddet/checkpoints/best.pth
+iou_threshold: 0.5

@@ -1,0 +1,13 @@
+model: early_fusion
+backbone: resnet50
+pretrained: imagenet
+fusion: concat_before_encoder
+
+data:
+  root: data/DroneVehicle
+  test_rgb: data/DroneVehicle/test/rgb
+  test_tir: data/DroneVehicle/test/ir
+  test_ann: data/DroneVehicle/test/annotations
+
+checkpoint: models/early_fusion/checkpoints/best.pth
+iou_threshold: 0.5

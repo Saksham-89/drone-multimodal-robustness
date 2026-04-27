@@ -1,0 +1,12 @@
+model: c2former
+backbone: resnet50
+pretrained: imagenet
+
+data:
+  root: data/DroneVehicle
+  test_rgb: data/DroneVehicle/test/rgb
+  test_tir: data/DroneVehicle/test/ir
+  test_ann: data/DroneVehicle/test/annotations
+
+checkpoint: models/c2former/checkpoints/best.pth
+iou_threshold: 0.5
