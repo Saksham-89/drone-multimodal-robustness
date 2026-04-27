@@ -125,13 +125,24 @@ Comparing mAP across all three isolates which sensor carries detection performan
 
 ---
 
+## Cloned Repos (models/)
+
+| Repo | Path | Framework | Notes |
+|---|---|---|---|
+| UA-CMDet | `models/ua_cmddet/` | AerialDetection + mmdetection (old fork) | Has `configs/DroneVehicle/UACMDet.py`. Own eval at `eval/DroneVehicleEval.py` with polyiou. Old deps (PyTorch 1.1, Python 3.7) — may need compat fixes. |
+| C2Former | `models/c2former/` | MMRotate | **No DroneVehicle config shipped.** Must write `configs/dronevehicle/c2former_dronevehicle.py` ourselves based on existing S2ANet/DOTA configs. |
+| MultiCorrupt | `models/multicorrupt/` | Reference only | `converter/img.py` — image corruption implementation to reference. `evaluation/` — RA CSVs for format reference. Do not run directly. |
+| DOTA devkit | `models/dota_devkit/` | Standalone | `dota_evaluation_task1.py` — main OBB eval script. Requires SWIG + polyiou C extension build (`polyiou.cpp`). |
+
+---
+
 ## Implementation Notes for Claude
 
 ### Key Libraries
 - `imagecorruptions` — corruption transforms
-- `DOTA` evaluation toolkit — OBB-aware mAP
+- `models/dota_devkit/dota_evaluation_task1.py` — OBB-aware mAP (requires SWIG build)
+- `models/ua_cmddet/eval/DroneVehicleEval.py` — UA-CMDet's own eval (also uses polyiou)
 - PyTorch — model training/inference
-- MultiCorrupt codebase — reference for RA metric implementation
 
 ### Critical Implementation Details
 - Corruptions are applied **independently** per modality — do not apply one corruption to both streams simultaneously unless it's testing joint degradation
@@ -140,18 +151,20 @@ Comparing mAP across all three isolates which sensor carries detection performan
 - RA = corrupted_mAP / clean_mAP, computed per (corruption_type, severity, modality_condition, model) cell
 - Clean baseline mAP must be validated against published figures for UA-CMDet and C2Former before proceeding with corruption experiments
 - DOTA eval toolkit required — standard COCO mAP will give wrong results on oriented boxes
+- **C2Former DroneVehicle config must be written from scratch** — use `models/c2former/configs/s2anet/` as template and adapt dataset paths and class names to DroneVehicle
 
 ### HPC Context
 - Training runs on EEMCS HPC cluster (University of Twente)
-- Inference for corruption experiments: 3 models × 29 conditions × 3 modality configs = 261 inference runs total
+- Inference for corruption experiments: 3 models × 23 conditions × 3 modality configs = 207 + 3 baseline = 210 inference runs total
 
 ### Architecture Constraints
 - All three models use ResNet-50 backbone
-- C2Former uses Inter-modality Cross-Attention (ICA) at backbone level
-- UA-CMDet uses separate branches + uncertainty-guided fusion weights
-- Early fusion: concatenation before encoder
+- C2Former uses Inter-modality Cross-Attention (ICA) at backbone level; built on MMRotate
+- UA-CMDet uses separate branches + uncertainty-guided fusion weights; built on AerialDetection
+- Early fusion: concatenation before encoder; our own implementation
 
 ### What NOT to Do
 - Do not fine-tune models on corrupted data — evaluation only
 - Do not apply corruptions to the training split
-- Do not use standard COCO eval for OBB annotations
+- Do not use standard COCO mAP for OBB annotations
+- Do not run MultiCorrupt scripts directly — reference only for image corruption logic and RA output format

@@ -10,6 +10,8 @@ data/corrupted/
 models/ua_cmddet/
 models/c2former/
 models/early_fusion/
+models/multicorrupt/
+models/dota_devkit/
 *.pth
 *.pt
 *.bin
