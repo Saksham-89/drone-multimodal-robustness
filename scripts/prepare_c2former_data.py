@@ -32,6 +32,7 @@ XML_CLASS_MAP = {
     'van': 'van',
     'freight car': 'freight_car',
     'freight_car': 'freight_car',
+    'feright car': 'freight_car',   # typo present in the HuggingFace dataset
 }
 
 SPLIT_DIRS = {
@@ -53,12 +54,22 @@ def xml_to_dota_lines(xml_path):
             continue
         difficult = obj.find('difficult').text.strip()
         p = obj.find('polygon')
-        coords = ' '.join([
-            p.find('x1').text.strip(), p.find('y1').text.strip(),
-            p.find('x2').text.strip(), p.find('y2').text.strip(),
-            p.find('x3').text.strip(), p.find('y3').text.strip(),
-            p.find('x4').text.strip(), p.find('y4').text.strip(),
-        ])
+        if p is None:
+            bndbox = obj.find('bndbox')
+            if bndbox is None:
+                continue
+            x1 = bndbox.find('xmin').text.strip()
+            y1 = bndbox.find('ymin').text.strip()
+            x2 = bndbox.find('xmax').text.strip()
+            y2 = bndbox.find('ymax').text.strip()
+            coords = f'{x1} {y1} {x2} {y1} {x2} {y2} {x1} {y2}'
+        else:
+            coords = ' '.join([
+                p.find('x1').text.strip(), p.find('y1').text.strip(),
+                p.find('x2').text.strip(), p.find('y2').text.strip(),
+                p.find('x3').text.strip(), p.find('y3').text.strip(),
+                p.find('x4').text.strip(), p.find('y4').text.strip(),
+            ])
         lines.append(f'{coords} {cls} {difficult}')
     return lines
 

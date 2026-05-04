@@ -33,6 +33,7 @@ XML_CLASS_MAP = {
     'van': 'van',
     'freight car': 'freight_car',
     'freight_car': 'freight_car',
+    'feright car': 'freight_car',   # typo present in the HuggingFace dataset
 }
 
 
@@ -59,12 +60,24 @@ def parse_xml(xml_path):
             continue
         difficult = int(obj.find('difficult').text)
         poly = obj.find('polygon')
-        coords = [
-            float(poly.find('x1').text), float(poly.find('y1').text),
-            float(poly.find('x2').text), float(poly.find('y2').text),
-            float(poly.find('x3').text), float(poly.find('y3').text),
-            float(poly.find('x4').text), float(poly.find('y4').text),
-        ]
+        if poly is None:
+            # Some annotations use <bndbox> instead of <polygon> — convert to
+            # an axis-aligned degenerate polygon (4 corners of the bndbox).
+            bndbox = obj.find('bndbox')
+            if bndbox is None:
+                continue
+            x1 = float(bndbox.find('xmin').text)
+            y1 = float(bndbox.find('ymin').text)
+            x2 = float(bndbox.find('xmax').text)
+            y2 = float(bndbox.find('ymax').text)
+            coords = [x1, y1, x2, y1, x2, y2, x1, y2]
+        else:
+            coords = [
+                float(poly.find('x1').text), float(poly.find('y1').text),
+                float(poly.find('x2').text), float(poly.find('y2').text),
+                float(poly.find('x3').text), float(poly.find('y3').text),
+                float(poly.find('x4').text), float(poly.find('y4').text),
+            ]
         xs, ys = coords[0::2], coords[1::2]
         xmin, xmax = min(xs), max(xs)
         ymin, ymax = min(ys), max(ys)
