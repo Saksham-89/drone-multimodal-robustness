@@ -35,6 +35,7 @@ XML_CLASS_MAP = {
     'freight_car': 'freight_car',
     'feright car': 'freight_car',   # typo present in the HuggingFace dataset
     'feright_car': 'freight_car',   # typo with underscore variant
+    'feright': 'freight_car',       # further-truncated typo variant
 }
 
 
@@ -129,12 +130,12 @@ def convert(xml_dir, img_dir, output_path):
     coco = {'images': images, 'annotations': annotations, 'categories': categories}
     with open(output_path, 'w') as f:
         json.dump(coco, f)
-    print(f'Done: {len(images)} images, {len(annotations)} annotations → {output_path}'
-          + (f' ({skipped} images skipped — no matching jpg)' if skipped else ''))
+    print(f'Done: {len(images)} images, {len(annotations)} annotations -> {output_path}'
+          + (f' ({skipped} images skipped - no matching jpg)' if skipped else ''))
 
 
 def main():
-    p = argparse.ArgumentParser(description='DroneVehicle XML → COCO JSON for UA-CMDet')
+    p = argparse.ArgumentParser(description='DroneVehicle XML -> COCO JSON for UA-CMDet')
     p.add_argument('--xml-dir', required=True, help='directory of .xml annotation files')
     p.add_argument('--img-dir', required=True, help='directory of .jpg image files')
     p.add_argument('--output', required=True, help='output .json path')

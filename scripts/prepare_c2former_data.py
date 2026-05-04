@@ -34,6 +34,7 @@ XML_CLASS_MAP = {
     'freight_car': 'freight_car',
     'feright car': 'freight_car',   # typo present in the HuggingFace dataset
     'feright_car': 'freight_car',   # typo with underscore variant
+    'feright': 'freight_car',       # further-truncated typo variant
 }
 
 SPLIT_DIRS = {
@@ -120,8 +121,8 @@ def prepare(data_root, split):
 
         created += 1
 
-    print(f'{split}: {created} pairs created → {matched_img.name}/ + {matched_label.name}/'
-          + (f' ({skipped} skipped — missing image)' if skipped else ''))
+    print(f'{split}: {created} pairs created -> {matched_img.name}/ + {matched_label.name}/'
+          + (f' ({skipped} skipped - missing image)' if skipped else ''))
 
 
 def main():
