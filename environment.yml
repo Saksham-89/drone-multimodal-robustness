@@ -20,5 +20,7 @@ dependencies:
   - pip
   - pip:
     - imagecorruptions          # corruption transforms (Michaelis et al.)
+    - wand                      # required by imagecorruptions.motion_blur (ImageMagick binding)
+    - scikit-image              # required by imagecorruptions.brightness / contrast
     - mmcv-full                 # likely needed by model repos (check versions after cloning)
     - mmdet

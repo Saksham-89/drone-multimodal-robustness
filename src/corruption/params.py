@@ -1,5 +1,15 @@
 # Corruption severity parameters — Table 2 from research proposal.
 # All pixel values normalized to [0, 1].
+#
+# RGB params are documentation only: imagecorruptions library severity 1/2/3
+# maps to these values exactly, so pipeline.py passes severity directly to the
+# library rather than reading RGB params at runtime.
+#
+# TIR sensor_noise and blur params are actively used by pipeline.py because:
+#   - sensor_noise sigma (0.15/0.20/0.35) differs from the library's defaults
+#     (0.08/0.12/0.18); thermal sensors are noisier than RGB sensors.
+#   - blur has no imagecorruptions equivalent; scipy gaussian_filter uses these
+#     sigma values directly.
 
 RGB_CORRUPTIONS = {
     "gaussian_noise": {
