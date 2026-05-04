@@ -125,6 +125,39 @@ Comparing mAP across all three isolates which sensor carries detection performan
 
 ---
 
+## HPC Cluster (EEMCS, University of Twente)
+
+**Access**: Campus network or eduVPN required  
+**Head nodes**: `hpc-head1.ewi.utwente.nl` or `hpc-head2.ewi.utwente.nl`  
+**Username**: `s3165582` (lowercase only — not `S3165582`)  
+**Home directory**: `/home/s3165582`  
+**Dataset/project storage**: `/datasets/` or `/projects/`  
+**Local node temp storage**: `/local` (node-specific only, not shared across nodes)
+
+### Connection (Windows)
+- SSH/terminal: PuTTY → `hpc-head1.ewi.utwente.nl`, port 22
+- File transfer: WinSCP
+
+### Partitions
+Use `main-cpu` or `main-gpu` as the partition specification. Do **not** use `gpu` alone — it is not a valid partition on this cluster.
+
+### DO NOTs
+- Do NOT directly login to compute nodes — only connect to head nodes (`hpc-head1` / `hpc-head2`)
+- Do NOT run heavy computation on the head node — compile and submit SLURM jobs only
+- Do NOT use interactive jobs unless strictly necessary (e.g., quick debugging); prefer non-interactive batch jobs
+- Do NOT store large datasets in `/home/` — use `/datasets/` or `/projects/` for dataset and model storage
+
+### Key Links
+- SLURM guide: https://hpc.wiki.utwente.nl/slurm:start
+- Cluster overview: https://hpc.wiki.utwente.nl/eemcs-hpc
+- Software modules: https://hpc.wiki.utwente.nl/eemcs-hpc:software
+- Partitions detail: https://hpc.wiki.utwente.nl/eemcs-hpc:specifics#partitions
+- Connecting: https://hpc.wiki.utwente.nl/connecting
+- Cluster status: http://hpc-status.ewi.utwente.nl/slurm/
+- SLURM quickstart: https://slurm.schedmd.com/quickstart.html
+
+---
+
 ## Cloned Repos (models/)
 
 | Repo | Path | Framework | Notes |
