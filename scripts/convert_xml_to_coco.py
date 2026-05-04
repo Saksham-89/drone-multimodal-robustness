@@ -36,6 +36,7 @@ XML_CLASS_MAP = {
     'feright car': 'freight_car',   # typo present in the HuggingFace dataset
     'feright_car': 'freight_car',   # typo with underscore variant
     'feright': 'freight_car',       # further-truncated typo variant
+    'truvk': 'truck',               # typo present in the HuggingFace dataset
 }
 
 
