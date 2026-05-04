@@ -13,4 +13,7 @@ module load nvidia/cuda-11.8
 conda activate thesis
 
 cd $SLURM_SUBMIT_DIR
-python models/c2former/train.py --config experiments/configs/c2former.yaml
+python scripts/create_2stream_pretrain.py
+python models/c2former/tools/train.py \
+    experiments/configs/c2former_dronevehicle.py \
+    --work-dir work_dirs/c2former
