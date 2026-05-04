@@ -58,9 +58,10 @@ IDENTIFIER_REPLACEMENTS = [
     # THCudaCheck -> C10_CUDA_CHECK
     (r'\bTHCudaCheck\b', 'C10_CUDA_CHECK'),
 
-    # Remove THCState declaration lines
-    (r'^\s*THCState\s*\*\s*state\s*=\s*at::globalContext\(\)\.[^;]+;\s*\n', ''),
-    (r'\bTHCState\b', 'void /* THCState removed */'),
+    # Remove THCState declaration lines (original and already-partially-patched forms)
+    (r'^\s*(?:void\s*/\*[^*]*\*/\s*\*\s*|THCState\s*\*\s*)state\s*=\s*at::globalContext\(\)\.[^;]+;[^\n]*\n', ''),
+    # Replace any remaining bare THCState (not inside a comment already)
+    (r'\bTHCState\b(?!\s*removed)', 'void /* THCState removed */'),
 ]
 
 

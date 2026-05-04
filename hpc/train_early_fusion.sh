@@ -14,4 +14,7 @@ eval "$(conda shell.bash hook)"
 conda activate thesis
 
 cd $SLURM_SUBMIT_DIR
-python experiments/train_early_fusion.py --config experiments/configs/early_fusion.yaml
+export PYTHONPATH=/home/s3165582/thesis/drone-multimodal-robustness:$PYTHONPATH
+python models/c2former/tools/train.py \
+    experiments/configs/early_fusion_dronevehicle.py \
+    --work-dir work_dirs/early_fusion
