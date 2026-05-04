@@ -163,7 +163,7 @@ Use `main-cpu` or `main-gpu` as the partition specification. Do **not** use `gpu
 | Repo | Path | Framework | Notes |
 |---|---|---|---|
 | UA-CMDet | `models/ua_cmddet/` | AerialDetection + mmdetection (old fork) | Has `configs/DroneVehicle/UACMDet.py`. Own eval at `eval/DroneVehicleEval.py` with polyiou. Old deps (PyTorch 1.1, Python 3.7) — may need compat fixes. |
-| C2Former | `models/c2former/` | MMRotate | **No DroneVehicle config shipped.** Must write `configs/dronevehicle/c2former_dronevehicle.py` ourselves based on existing S2ANet/DOTA configs. |
+| C2Former | `models/c2former/` | MMRotate | **No DroneVehicle config shipped.** Must write `configs/dronevehicle/c2former_dronevehicle.py` ourselves based on existing S2ANet/DOTA configs. Repo: https://github.com/yuanmaoxun/C2Former |
 | MultiCorrupt | `models/multicorrupt/` | Reference only | `converter/img.py` — image corruption implementation to reference. `evaluation/` — RA CSVs for format reference. Do not run directly. |
 | DOTA devkit | `models/dota_devkit/` | Standalone | `dota_evaluation_task1.py` — main OBB eval script. Requires SWIG + polyiou C extension build (`polyiou.cpp`). |
 
