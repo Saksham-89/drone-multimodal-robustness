@@ -10,6 +10,7 @@
 
 module load anaconda3/2025.06
 module load nvidia/cuda-11.8
+eval "$(conda shell.bash hook)"
 conda activate thesis
 
 cd $SLURM_SUBMIT_DIR

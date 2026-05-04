@@ -10,7 +10,8 @@
 
 module load anaconda3/2025.06
 module load nvidia/cuda-11.8
-conda activate thesis  # update with your conda env name
+eval "$(conda shell.bash hook)"
+conda activate thesis
 
 cd $SLURM_SUBMIT_DIR
 python models/ua_cmddet/train.py --config experiments/configs/ua_cmddet.yaml
