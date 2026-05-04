@@ -20,8 +20,10 @@ dependencies:
   - pandas
   - jupyter
   - setuptools                    # provides pkg_resources; needed by several build systems
+  - pytest                        # test runner
   - pip
   - pip:
+    - setuptools                  # ensures pkg_resources is available to pip-installed packages
     - imagecorruptions            # corruption transforms (Michaelis et al.)
     - wand                        # required by imagecorruptions.motion_blur (ImageMagick binding)
     # mmcv / mmdet are NOT installed here — they must be installed separately per model

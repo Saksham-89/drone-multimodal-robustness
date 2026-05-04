@@ -1,5 +1,16 @@
+import sys
+import types
+
 import numpy as np
 from scipy.ndimage import gaussian_filter
+
+# imagecorruptions 1.1.2 imports pkg_resources at module level for texture-based
+# corruptions (frost, fog, snow) that this project never uses. Inject a minimal
+# stub so the import succeeds on systems where setuptools is not pip-visible.
+if "pkg_resources" not in sys.modules:
+    _stub = types.ModuleType("pkg_resources")
+    _stub.resource_filename = lambda package, resource: resource  # type: ignore[attr-defined]
+    sys.modules["pkg_resources"] = _stub
 
 from imagecorruptions.corruptions import (
     gaussian_noise as _ic_gaussian_noise,
