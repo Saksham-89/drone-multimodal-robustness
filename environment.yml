@@ -9,18 +9,22 @@ dependencies:
   - python=3.10
   - pytorch>=2.0
   - torchvision
-  - pytorch-cuda=11.8          # update to match EEMCS HPC CUDA version
+  - pytorch-cuda=11.8
   - numpy
+  - scipy                         # required by pipeline.py (gaussian_filter for TIR blur)
+  - scikit-image                  # required by imagecorruptions (brightness/contrast use skimage)
   - pillow
   - pyyaml
   - tqdm
   - matplotlib
   - pandas
   - jupyter
+  - setuptools                    # provides pkg_resources; needed by several build systems
   - pip
   - pip:
-    - imagecorruptions          # corruption transforms (Michaelis et al.)
-    - wand                      # required by imagecorruptions.motion_blur (ImageMagick binding)
-    - scikit-image              # required by imagecorruptions.brightness / contrast
-    - mmcv-full                 # likely needed by model repos (check versions after cloning)
-    - mmdet
+    - imagecorruptions            # corruption transforms (Michaelis et al.)
+    - wand                        # required by imagecorruptions.motion_blur (ImageMagick binding)
+    # mmcv / mmdet are NOT installed here — they must be installed separately per model
+    # using pre-built wheels matched to the exact CUDA+PyTorch version:
+    #   pip install mmcv -f https://download.openmmlab.com/mmcv/dist/cu118/torch2.0/index.html
+    # See models/*/README for per-model environment setup instructions.
