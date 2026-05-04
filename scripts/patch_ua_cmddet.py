@@ -41,9 +41,10 @@ HEADER_REPLACEMENTS = [
      r'(#include\s*[<"]THC/THCDeviceUtils\.cuh[>"]\s*\n)?',
      THC_COMPAT_MACROS),
 
-    # Standalone THCDeviceUtils (in case it wasn't already handled above)
+    # Standalone THCDeviceUtils.cuh — inject full compat block (handles files
+    # where THC/THC.h was already replaced by a prior patch run)
     (r'#include\s*[<"]THC/THCDeviceUtils\.cuh[>"]',
-     '/* THCDeviceUtils removed — compat macros already defined */'),
+     THC_COMPAT_MACROS),
 
     # THCAtomics -> ATen equivalent
     (r'#include\s*[<"]THC/THCAtomics\.cuh[>"]',
@@ -63,12 +64,22 @@ IDENTIFIER_REPLACEMENTS = [
 ]
 
 
+COMPAT_SENTINEL = '/* --- PyTorch 2.x THC compatibility --- */'
+
+
 def patch_file(path: Path) -> bool:
     original = path.read_text(encoding='utf-8', errors='replace')
     patched = original
 
     for pattern, replacement in HEADER_REPLACEMENTS:
         patched = re.sub(pattern, replacement, patched, flags=re.MULTILINE)
+
+    # Safety net: if the file uses THCCeilDiv/THCudaMalloc/THCudaFree but the
+    # compat block was never injected (e.g. prior patch run left only a comment),
+    # prepend the full compat block now.
+    THC_SYMBOLS = ('THCCeilDiv', 'THCudaMalloc', 'THCudaFree')
+    if any(sym in patched for sym in THC_SYMBOLS) and COMPAT_SENTINEL not in patched:
+        patched = THC_COMPAT_MACROS + patched
 
     # For .cu/.cuh files using C10_CUDA_CHECK but missing the header,
     # ensure the c10 exception header is present.
