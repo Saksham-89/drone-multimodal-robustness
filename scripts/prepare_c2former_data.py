@@ -52,7 +52,8 @@ def xml_to_dota_lines(xml_path):
         if cls is None:
             print(f'  WARNING: unknown class "{cls_raw}" in {xml_path}, skipping')
             continue
-        difficult = obj.find('difficult').text.strip()
+        diff_el = obj.find('difficult')
+        difficult = diff_el.text.strip() if diff_el is not None else '0'
         p = obj.find('polygon')
         if p is None:
             bndbox = obj.find('bndbox')

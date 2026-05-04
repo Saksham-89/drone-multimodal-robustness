@@ -58,7 +58,8 @@ def parse_xml(xml_path):
         if cls is None:
             print(f'  WARNING: unknown class "{cls_raw}" in {xml_path}, skipping')
             continue
-        difficult = int(obj.find('difficult').text)
+        diff_el = obj.find('difficult')
+        difficult = int(diff_el.text) if diff_el is not None else 0
         poly = obj.find('polygon')
         if poly is None:
             # Some annotations use <bndbox> instead of <polygon> — convert to
