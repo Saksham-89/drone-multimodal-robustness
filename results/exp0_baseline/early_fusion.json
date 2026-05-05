@@ -1,0 +1,8 @@
+{
+  "model": "early_fusion",
+  "map": 0.48484548926353455,
+  "split": "test",
+  "corruption": "none",
+  "job_id": 491917,
+  "checkpoint": "work_dirs/early_fusion/epoch_24.pth"
+}

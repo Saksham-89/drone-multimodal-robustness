@@ -70,7 +70,8 @@ Applied to **test split only**. Corruptions per modality are independent.
 
 All values normalized to [0, 1] pixel range. Intensity shift for TIR uses library's `brightness` function on the grayscale channel with same additive HSV offset parameterization as RGB brightness shift.
 
-**Total corruption conditions**: 9 graded types × 3 severities + 2 binary dropouts = **29 conditions per model**
+**Total corruption conditions**: 7 graded types × 3 severities + 2 binary dropouts = **23 conditions per model**
+(4 RGB graded + 3 TIR graded = 7 types; verified against `src/corruption/params.py`)
 
 ---
 
