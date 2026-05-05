@@ -87,20 +87,34 @@ Evaluated using DOTA mAP @ IoU 0.5.
 
 ---
 
+## Test Split Results (Exp 0 Baseline)
+
+**Job ID**: 491917 | **Checkpoint**: `work_dirs/early_fusion/epoch_24.pth`
+
+| Class | GT boxes | Detections | Recall | AP |
+|---|---|---|---|---|
+| car | 124,111 | 379,897 | 0.904 | 0.831 |
+| truck | 7,102 | 192,450 | 0.789 | 0.345 |
+| freight_car | 3,978 | 176,731 | 0.829 | 0.273 |
+| bus | 4,161 | 73,697 | 0.915 | 0.739 |
+| van | 3,960 | 193,029 | 0.853 | 0.236 |
+| **mAP** | | | | **0.485** |
+
+Val → test delta: 0.4876 → 0.4848 (−0.003). Negligible gap confirms no overfitting.
+
+---
+
 ## Comparison Context
 
 Early Fusion is our own implementation — there is no directly published baseline for this architecture on DroneVehicle.
 
-| Model | mAP | Split | Source |
-|---|---|---|---|
-| Early Fusion (ours) | **0.4876** | val | This run |
-| UA-CMDet | ~0.412 | test | Sun et al., TCSVT 2022 |
-| C2Former | TBD | test | Yuan & Wei, TGRS 2024 |
+| Model | mAP (test) | Source |
+|---|---|---|
+| **Early Fusion (ours)** | **0.485** | This run (job 491917) |
+| UA-CMDet | ~0.412 | Sun et al., TCSVT 2022 |
+| C2Former | TBD | Yuan & Wei, TGRS 2024 |
 
-**Important caveats**:
-- Val mAP is not directly comparable to published test mAP — the test split evaluation (exp0_baseline) is needed for the thesis comparison
-- The val mAP of 48.76% exceeding UA-CMDet's published 41.2% test mAP is plausible: (1) val vs test distributions may differ, (2) the 4-channel early fusion with warm-started TIR channel can be surprisingly effective when both modalities are clean
-- The definitive cross-model comparison uses the test split under clean conditions (Experiment 0)
+Early Fusion exceeds UA-CMDet's published test mAP by **+7.3 pp**. This is a thesis-relevant finding: simple early concatenation with a warm-started 4-channel backbone is a strong baseline, outperforming the uncertainty-guided late fusion approach under clean conditions. Whether this advantage holds under sensor corruption is the core RQ1 question.
 
 ---
 
@@ -114,13 +128,7 @@ Intermediate checkpoints saved every epoch to `work_dirs/early_fusion/`.
 
 ## Next Steps
 
-1. **Run test-split evaluation** to get the comparable baseline mAP:
-   ```bash
-   python models/c2former/tools/test.py \
-       experiments/configs/early_fusion_dronevehicle.py \
-       work_dirs/early_fusion/epoch_24.pth \
-       --eval mAP
-   ```
+1. ~~Run test-split evaluation~~ **Done** — mAP 0.485 (job 491917)
 2. Wait for C2Former and UA-CMDet training to complete, then run their test evaluations
 3. Implement `src/inference/early_fusion.py` inference wrapper for the corruption experiments
 4. Once all 3 baseline test mAPs are confirmed, proceed to Experiment 1 (corruption benchmark)

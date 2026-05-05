@@ -15,4 +15,4 @@ conda activate thesis
 
 cd $SLURM_SUBMIT_DIR
 export PYTHONPATH=/home/s3165582/thesis/drone-multimodal-robustness/models/ua_cmddet:$PYTHONPATH
-python models/ua_cmddet/tools/train.py models/ua_cmddet/configs/DroneVehicle/UACMDet.py --work-dir work_dirs/ua_cmddet
+python models/ua_cmddet/tools/train.py models/ua_cmddet/configs/DroneVehicle/UACMDet.py --work_dir work_dirs/ua_cmddet
