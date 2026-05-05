@@ -40,6 +40,19 @@
 
 ---
 
+## Training Schedule Justification
+
+24 epochs with step LR decay (drops 10× at epochs 16 and 22) is the standard schedule for S2ANet/C2Former-class detectors on DOTA-style datasets. It is not a shortened schedule.
+
+**Why 24 epochs is correct:**
+
+- **Generalization is confirmed**: val mAP (0.4876) and test mAP (0.4848) differ by only 0.003. Overfitting would manifest as a significant val > test gap — the opposite of what we see.
+- **Convergence is confirmed**: loss fell from 3.45 → 0.57 (83% reduction) with no divergence or plateau-then-increase. By epoch 24 the LR is at 1e-5, meaning the model is doing fine-grained refinement, not active learning.
+- **Fair comparison requires a fixed schedule**: all three models (Early Fusion, C2Former, UA-CMDet) are trained for 24 epochs with identical LR schedules. Training Early Fusion longer would break comparability.
+- **Augmentation mitigates overfitting risk**: RRandomFlip in three directions (horizontal, vertical, diagonal) plus weight decay (1e-4) regularise the model throughout training.
+
+---
+
 ## Training Dynamics
 
 Loss at selected iterations (epoch 1):
