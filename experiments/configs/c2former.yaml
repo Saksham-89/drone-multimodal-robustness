@@ -1,22 +1,3 @@
 model: c2former
-backbone: resnet50
-pretrained: imagenet
-
-data:
-  root: data/DroneVehicle
-  train_rgb: data/DroneVehicle/train/trainimg
-  train_tir: data/DroneVehicle/train/trainimgr
-  train_ann: data/DroneVehicle/train/trainlabel
-  train_ann_tir: data/DroneVehicle/train/trainlabelr
-  val_rgb: data/DroneVehicle/val/valimg
-  val_tir: data/DroneVehicle/val/valimgr
-  val_ann: data/DroneVehicle/val/vallabel
-  val_ann_tir: data/DroneVehicle/val/vallabelr
-  test_rgb: data/DroneVehicle/test/testimg
-  test_tir: data/DroneVehicle/test/testimgr
-  test_ann: data/DroneVehicle/test/testlabel
-  test_ann_tir: data/DroneVehicle/test/testlabelr
-  ann_format: xml_polygon  # native DroneVehicle format: <polygon><x1>..</x4><y1>..</y4>
-
-checkpoint: models/c2former/checkpoints/best.pth
-iou_threshold: 0.5
+mmdet_config: experiments/configs/c2former_dronevehicle.py
+checkpoint: work_dirs/c2former/epoch_24.pth

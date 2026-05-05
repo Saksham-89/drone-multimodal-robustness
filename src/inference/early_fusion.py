@@ -1,17 +1,85 @@
+"""Inference runner for the Early Fusion model (our implementation).
+
+Uses mmrotate's dataset / data-loading infrastructure. The corruption and
+modality-zeroing transforms are injected into the test pipeline at position 1
+(after LoadPairedImageFromFile, before ConcatRGBTIR) so they operate on raw
+uint8 pixel values before normalisation.
+"""
+
+import sys
+import mmcv
+import torch
 from pathlib import Path
-import numpy as np
+
 from .base import BaseInferenceRunner
 
 
 class EarlyFusionRunner(BaseInferenceRunner):
-    """Inference wrapper for the early-fusion (concatenation) baseline.
 
-    This model is implemented by us — RGB and TIR feature maps concatenated
-    before the main encoder, ResNet-50 backbone.
-    """
+    # Insert corruption transforms here in the test pipeline list.
+    # Index 0 = LoadPairedImageFromFile
+    # Index 1 = ConcatRGBTIR   ← insert before this
+    # Index 2 = MultiScaleFlipAug
+    _INJECT_POS = 1
+
+    def __init__(self, config_path: str, device_id: int = 0):
+        self.config_path = str(config_path)
+        self.device_id = device_id
+        self.model = None
+        self._wrapped = None
 
     def load_model(self, checkpoint_path: Path) -> None:
-        raise NotImplementedError("Implement after defining the early fusion model architecture")
+        project_root = str(Path(__file__).resolve().parents[2])
+        if project_root not in sys.path:
+            sys.path.insert(0, project_root)
 
-    def run(self, rgb: np.ndarray, tir: np.ndarray) -> list[dict]:
-        raise NotImplementedError("Implement after defining the early fusion model architecture")
+        from mmrotate.apis import init_detector
+        from mmcv.parallel import MMDataParallel
+
+        self.model = init_detector(
+            self.config_path, str(checkpoint_path),
+            device=f'cuda:{self.device_id}')
+        self.model.eval()
+        self._wrapped = MMDataParallel(self.model, device_ids=[self.device_id])
+
+    def run(self, rgb, tir):
+        raise NotImplementedError(
+            "Use evaluate() — per-image inference is not needed for mAP computation.")
+
+    def evaluate(self, corruption_type=None, modality=None, severity=None,
+                 zero_modality=None) -> float:
+        """Run full test-set evaluation with optional corruption / modality zeroing.
+
+        Returns mAP@0.5 as a float.
+        """
+        import src.transforms  # registers ApplyCorruption + ZeroModality  # noqa: F401
+        from mmdet.datasets import build_dataset, build_dataloader
+
+        cfg = mmcv.Config.fromfile(self.config_path)
+        cfg.data.test.test_mode = True
+
+        pos = self._INJECT_POS
+        if corruption_type is not None:
+            cfg.data.test.pipeline.insert(pos, dict(
+                type='ApplyCorruption',
+                modality=modality,
+                corruption_type=corruption_type,
+                severity=severity))
+            pos += 1
+        if zero_modality is not None:
+            cfg.data.test.pipeline.insert(pos, dict(
+                type='ZeroModality', modality=zero_modality))
+
+        dataset = build_dataset(cfg.data.test)
+        data_loader = build_dataloader(
+            dataset, samples_per_gpu=1, workers_per_gpu=4,
+            dist=False, shuffle=False)
+
+        results = []
+        for data in data_loader:
+            with torch.no_grad():
+                result = self._wrapped(return_loss=False, rescale=True, **data)
+            results.extend(result)
+
+        eval_out = dataset.evaluate(results, metric='mAP')
+        return float(eval_out['mAP'])
