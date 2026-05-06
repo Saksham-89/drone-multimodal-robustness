@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=exp1_c2former
 #SBATCH --partition=main-gpu
+#SBATCH --exclude=ctit085
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=32G
