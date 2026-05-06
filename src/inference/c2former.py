@@ -11,7 +11,7 @@ import mmcv
 import torch
 from pathlib import Path
 
-from .base import BaseInferenceRunner
+from .base import BaseInferenceRunner, scatter_data
 
 
 class C2FormerRunner(BaseInferenceRunner):
@@ -34,7 +34,6 @@ class C2FormerRunner(BaseInferenceRunner):
 
         from mmrotate.models import build_detector
         from mmcv.runner import load_checkpoint
-        from mmcv.parallel import MMDataParallel
 
         cfg = mmcv.Config.fromfile(self.config_path)
         cfg.model.pretrained = None
@@ -44,7 +43,7 @@ class C2FormerRunner(BaseInferenceRunner):
         model = model.cuda(self.device_id)
         model.eval()
         self.model = model
-        self._wrapped = MMDataParallel(self.model, device_ids=[self.device_id])
+        self._device = torch.device('cuda', self.device_id)
 
     def run(self, rgb, tir):
         raise NotImplementedError(
@@ -81,8 +80,9 @@ class C2FormerRunner(BaseInferenceRunner):
 
         results = []
         for data in data_loader:
+            gpu_data = scatter_data(data, self._device)
             with torch.no_grad():
-                result = self._wrapped(return_loss=False, rescale=True, **data)
+                result = self.model(return_loss=False, rescale=True, **gpu_data)
             results.extend(result)
 
         eval_out = dataset.evaluate(results, metric='mAP')
