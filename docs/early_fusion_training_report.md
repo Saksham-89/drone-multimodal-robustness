@@ -123,9 +123,9 @@ Early Fusion is our own implementation — there is no directly published baseli
 
 | Model | mAP (test) | Source |
 |---|---|---|
-| **Early Fusion (ours)** | **0.485** | This run (job 491917) |
+| **Early Fusion (ours)** | **0.485** | This work (job 491917) |
 | UA-CMDet | ~0.412 | Sun et al., TCSVT 2022 |
-| C2Former | TBD | Yuan & Wei, TGRS 2024 |
+| C2Former (ours) | **0.705** | This work (job 492464) |
 
 Early Fusion exceeds UA-CMDet's published test mAP by **+7.3 pp**. This is a thesis-relevant finding: simple early concatenation with a warm-started 4-channel backbone is a strong baseline, outperforming the uncertainty-guided late fusion approach under clean conditions. Whether this advantage holds under sensor corruption is the core RQ1 question.
 

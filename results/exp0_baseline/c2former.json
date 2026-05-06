@@ -1,0 +1,15 @@
+{
+  "model": "c2former",
+  "map": 0.7045733332633972,
+  "split": "test",
+  "corruption": "none",
+  "job_id": 492464,
+  "checkpoint": "work_dirs/c2former/epoch_24.pth",
+  "per_class": {
+    "car": 0.894,
+    "truck": 0.682,
+    "freight_car": 0.542,
+    "bus": 0.889,
+    "van": 0.515
+  }
+}

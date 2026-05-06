@@ -32,13 +32,18 @@ class C2FormerRunner(BaseInferenceRunner):
         if project_root not in sys.path:
             sys.path.insert(0, project_root)
 
-        from mmrotate.apis import init_detector
+        from mmrotate.models import build_detector
+        from mmcv.runner import load_checkpoint
         from mmcv.parallel import MMDataParallel
 
-        self.model = init_detector(
-            self.config_path, str(checkpoint_path),
-            device=f'cuda:{self.device_id}')
-        self.model.eval()
+        cfg = mmcv.Config.fromfile(self.config_path)
+        cfg.model.pretrained = None
+        model = build_detector(cfg.model, test_cfg=cfg.get('test_cfg'))
+        load_checkpoint(model, str(checkpoint_path), map_location='cpu')
+        model.cfg = cfg
+        model = model.cuda(self.device_id)
+        model.eval()
+        self.model = model
         self._wrapped = MMDataParallel(self.model, device_ids=[self.device_id])
 
     def run(self, rgb, tir):
