@@ -11,7 +11,27 @@ import mmcv
 import torch
 from pathlib import Path
 
-from .base import BaseInferenceRunner, scatter_data
+from .base import BaseInferenceRunner
+
+
+def _patch_mmcv_get_stream():
+    """mmcv passes integer device IDs to torch's _get_stream, but PyTorch 2.x
+    changed _get_stream to require torch.device objects. Patch both namespaces."""
+    import torch.nn.parallel._functions as _torch_pf
+    try:
+        import mmcv.parallel._functions as _mmcv_pf
+    except ImportError:
+        return
+    _orig = _torch_pf._get_stream
+    if getattr(_orig, '_patched', False):
+        return
+    def _patched(device):
+        if isinstance(device, int):
+            device = torch.device('cuda', device)
+        return _orig(device)
+    _patched._patched = True
+    _torch_pf._get_stream = _patched
+    _mmcv_pf._get_stream = _patched
 
 
 class EarlyFusionRunner(BaseInferenceRunner):
@@ -33,8 +53,11 @@ class EarlyFusionRunner(BaseInferenceRunner):
         if project_root not in sys.path:
             sys.path.insert(0, project_root)
 
+        _patch_mmcv_get_stream()
+
         from mmrotate.models import build_detector
         from mmcv.runner import load_checkpoint
+        from mmcv.parallel import MMDataParallel
 
         cfg = mmcv.Config.fromfile(self.config_path)
         cfg.model.pretrained = None
@@ -44,7 +67,7 @@ class EarlyFusionRunner(BaseInferenceRunner):
         model = model.cuda(self.device_id)
         model.eval()
         self.model = model
-        self._device = torch.device('cuda', self.device_id)
+        self._wrapped = MMDataParallel(self.model, device_ids=[self.device_id])
 
     def run(self, rgb, tir):
         raise NotImplementedError(
@@ -81,9 +104,8 @@ class EarlyFusionRunner(BaseInferenceRunner):
 
         results = []
         for data in data_loader:
-            gpu_data = scatter_data(data, self._device)
             with torch.no_grad():
-                result = self.model(return_loss=False, rescale=True, **gpu_data)
+                result = self._wrapped(return_loss=False, rescale=True, **data)
             results.extend(result)
 
         eval_out = dataset.evaluate(results, metric='mAP')
