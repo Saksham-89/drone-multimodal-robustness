@@ -139,9 +139,9 @@ Intermediate checkpoints saved every epoch to `work_dirs/early_fusion/`.
 
 ---
 
-## Next Steps
+## Status
 
 1. ~~Run test-split evaluation~~ **Done** — mAP 0.485 (job 491917)
-2. Wait for C2Former and UA-CMDet training to complete, then run their test evaluations
-3. Implement `src/inference/early_fusion.py` inference wrapper for the corruption experiments
-4. Once all 3 baseline test mAPs are confirmed, proceed to Experiment 1 (corruption benchmark)
+2. ~~Implement `src/inference/early_fusion.py`~~ **Done** — MMDataParallel + `_patch_mmcv_get_stream` fix applied
+3. ~~Exp 1 (corruption benchmark)~~ **Done** — 20/23 valid conditions; TIR intensity_shift re-running (pipeline bug fixed 2026-05-07); see `docs/exp1_corruption_report.md`
+4. Exp 2 (modality removal) — **Running** (job 493280, ctit086)

@@ -135,9 +135,10 @@ All 24 intermediate checkpoints saved at `work_dirs/c2former/epoch_N.pth`.
 
 ---
 
-## Next Steps
+## Status
 
 1. ~~Training~~ **Done** — 24 epochs, job 491914
 2. ~~Test-split evaluation~~ **Done** — mAP 0.705, job 492464
-3. Submit exp1 and exp2 corruption experiments once GPU slots free up
-4. Validate against C2Former published DroneVehicle mAP (Yuan & Wei, TGRS 2024)
+3. Exp 1 (corruption benchmark) — **Queued** (job 493293, PD Priority)
+4. Exp 2 (modality removal) — **Not yet submitted** (submit after exp1 confirms clean_map matches baseline)
+5. Validate against C2Former published DroneVehicle mAP (Yuan & Wei, TGRS 2024) — pending exp1 results

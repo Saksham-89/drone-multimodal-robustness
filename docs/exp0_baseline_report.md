@@ -2,7 +2,7 @@
 
 **Purpose**: Establish clean-data mAP for all three models on the DroneVehicle test split. These figures are the denominator in the Resistance Ability (RA) metric used throughout the corruption experiments.
 
-**Status**: Early Fusion and C2Former complete. UA-CMDet pending (job 492525).
+**Status**: Early Fusion and C2Former complete. UA-CMDet test result still pending — check `results/exp0_baseline/ua_cmddet.json` (job 492525 was queued; verify whether it completed or needs resubmission).
 
 ---
 
