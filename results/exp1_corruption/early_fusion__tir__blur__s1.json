@@ -1,0 +1,9 @@
+{
+  "model": "early_fusion",
+  "modality": "tir",
+  "corruption": "blur",
+  "severity": 1,
+  "map": 0.48208895325660706,
+  "clean_map": 0.48484548926353455,
+  "ra": 0.9943146093591289
+}

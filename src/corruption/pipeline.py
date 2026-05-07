@@ -51,11 +51,11 @@ def _tir_blur(image: np.ndarray, sigma: float) -> np.ndarray:
 
 
 def _tir_intensity_shift(image: np.ndarray, severity: int) -> np.ndarray:
-    # imagecorruptions brightness uses skimage.color.rgb2hsv which requires
-    # 3-channel input. Expand grayscale TIR to RGB, apply, take one channel back.
-    rgb = np.stack([image, image, image], axis=-1)
-    result = _apply_ic(_ic_brightness, rgb, severity)
-    return result[:, :, 0]
+    # Add constant offset to the normalized pixel value, equivalent to the V-channel
+    # shift in HSV that _ic_brightness performs — but shape-agnostic (works for
+    # 2D grayscale, (H,W,1), or (H,W,3) TIR images without wrong-shape stacking).
+    c = [0.10, 0.20, 0.30][severity - 1]
+    return _clip_uint8(image.astype(np.float32) + c * 255.0)
 
 
 def _complete_dropout(image: np.ndarray) -> np.ndarray:

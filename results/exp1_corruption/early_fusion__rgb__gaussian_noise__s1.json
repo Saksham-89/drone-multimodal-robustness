@@ -1,0 +1,9 @@
+{
+  "model": "early_fusion",
+  "modality": "rgb",
+  "corruption": "gaussian_noise",
+  "severity": 1,
+  "map": 0.4510665833950043,
+  "clean_map": 0.48484548926353455,
+  "ra": 0.9303305762010091
+}

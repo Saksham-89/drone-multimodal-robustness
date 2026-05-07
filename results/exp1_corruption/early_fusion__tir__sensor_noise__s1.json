@@ -1,0 +1,9 @@
+{
+  "model": "early_fusion",
+  "modality": "tir",
+  "corruption": "sensor_noise",
+  "severity": 1,
+  "map": 0.4633901119232178,
+  "clean_map": 0.48484548926353455,
+  "ra": 0.955748010829374
+}

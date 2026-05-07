@@ -1,0 +1,9 @@
+{
+  "model": "early_fusion",
+  "modality": "tir",
+  "corruption": "complete_dropout",
+  "severity": null,
+  "map": 0.1498,
+  "clean_map": 0.48484548926353455,
+  "ra": 0.3090
+}
