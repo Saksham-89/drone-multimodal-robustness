@@ -9,7 +9,11 @@ so that corruptions operate on raw uint8 pixel values.
 """
 
 import numpy as np
-from mmdet.datasets.builder import PIPELINES
+
+try:
+    from mmdet.datasets.builder import PIPELINES          # mmrotate / mmdet 2.x
+except ImportError:
+    from mmdet.datasets.registry import PIPELINES         # AerialDetection / mmdet 1.x
 
 
 @PIPELINES.register_module()

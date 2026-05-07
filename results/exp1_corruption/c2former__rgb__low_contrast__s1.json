@@ -1,0 +1,9 @@
+{
+  "model": "c2former",
+  "modality": "rgb",
+  "corruption": "low_contrast",
+  "severity": 1,
+  "map": 0.6122086644172668,
+  "clean_map": 0.7045733332633972,
+  "ra": 0.8689069476723996
+}
