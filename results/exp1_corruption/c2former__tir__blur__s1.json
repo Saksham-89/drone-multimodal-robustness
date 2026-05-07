@@ -1,0 +1,9 @@
+{
+  "model": "c2former",
+  "modality": "tir",
+  "corruption": "blur",
+  "severity": 1,
+  "map": 0.6900527477264404,
+  "clean_map": 0.7045733332633972,
+  "ra": 0.9793909521529842
+}

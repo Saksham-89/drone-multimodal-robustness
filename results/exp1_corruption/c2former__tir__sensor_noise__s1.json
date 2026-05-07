@@ -1,0 +1,9 @@
+{
+  "model": "c2former",
+  "modality": "tir",
+  "corruption": "sensor_noise",
+  "severity": 1,
+  "map": 0.6566210985183716,
+  "clean_map": 0.7045733332633972,
+  "ra": 0.931941456650192
+}
