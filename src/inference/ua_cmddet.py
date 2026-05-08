@@ -7,9 +7,15 @@ loop (denormalise → corrupt → renormalise), bypassing pipeline injection.
 
 Normalisation: mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375]
 Data dict keys (TSDroneVehicleDataset): 'img' = RGB, 'img_i' = TIR.
-Eval: inline COCO bbox eval using dataset.coco_r / cat_ids_r / img_ids_r.
-The model may return a dict (one entry per stream); we use the last value
-(fused stream) if so.
+Eval: inline COCO bbox eval (IoU@0.5) against coco_r annotations.
+
+Result format handling:
+  - Model returns a list (batch-list) or a dict keyed by stream name.
+  - If dict, take the last value (fused stream).
+  - Per-image result is a list of per-class arrays:
+      HBB format (5 values): [x1, y1, x2, y2, score]
+      OBB format (6 values): [cx, cy, w, h, angle_deg, score]
+    Both are converted to axis-aligned [x1,y1,w,h] for COCO eval.
 """
 
 import sys
@@ -34,6 +40,19 @@ def _tensor_to_uint8(t):
 def _uint8_to_tensor(arr, device):
     f = (arr.astype(np.float32) - _MEAN) / _STD
     return torch.from_numpy(f).permute(2, 0, 1).unsqueeze(0).to(device)
+
+
+def _obb_to_aabb(cx, cy, w, h, angle_deg):
+    """Convert oriented box (cx,cy,w,h,angle) to axis-aligned [x1,y1,x2,y2]."""
+    import cv2
+    box = cv2.boxPoints(((float(cx), float(cy)),
+                          (float(w),  float(h)),
+                          float(angle_deg)))  # shape (4,2)
+    x1 = float(box[:, 0].min())
+    y1 = float(box[:, 1].min())
+    x2 = float(box[:, 0].max())
+    y2 = float(box[:, 1].max())
+    return x1, y1, x2, y2
 
 
 class UACMDetRunner(BaseInferenceRunner):
@@ -107,12 +126,22 @@ class UACMDetRunner(BaseInferenceRunner):
                     data, corruption_type, modality, severity, zero_modality)
             with torch.no_grad():
                 result = self._wrapped(return_loss=False, rescale=True, **data)
-            results.append(result)
 
-        # Build COCO-format detections from results.
-        # Model may return a dict keyed by stream name — take the last entry (fused).
-        # Each per-image result is a list of class arrays shaped [N, >=5]:
-        #   [x1, y1, x2, y2, score, ...] in pixel coordinates.
+            # Unwrap multi-stream dict → take fused (last) stream
+            if isinstance(result, dict):
+                result = list(result.values())[-1]
+
+            # result is either [per_img_result] (batch list, most common in AerialDetection)
+            # or per_img_result directly. Detect by checking if first element is a list.
+            if isinstance(result, (list, tuple)) and result and isinstance(result[0], list):
+                results.extend(result)   # batch list → peel wrapper
+            else:
+                results.append(result)   # already per-image
+
+        # Build COCO-format detections.
+        # Per-image result: list of per-class arrays shaped [N, K]:
+        #   K=5 → HBB [x1, y1, x2, y2, score]
+        #   K=6 → OBB [cx, cy, w, h, angle_deg, score]
         coco_gt = dataset.coco_r
         cat_ids = dataset.cat_ids_r
         img_ids = dataset.img_ids_r
@@ -120,16 +149,22 @@ class UACMDetRunner(BaseInferenceRunner):
 
         for idx, result in enumerate(results):
             if isinstance(result, dict):
-                result = list(result.values())[-1]  # fused stream is last
+                result = list(result.values())[-1]
             img_id = img_ids[idx]
             for cls_idx, dets in enumerate(result):
                 if dets is None or len(dets) == 0:
                     continue
                 dets = np.asarray(dets)
+                if dets.ndim == 1:
+                    dets = dets[np.newaxis]  # single detection
                 for det in dets:
-                    x1, y1, x2, y2, score = (float(det[0]), float(det[1]),
-                                              float(det[2]), float(det[3]),
-                                              float(det[4]))
+                    k = len(det)
+                    if k >= 6:
+                        x1, y1, x2, y2 = _obb_to_aabb(det[0], det[1], det[2], det[3], det[4])
+                        score = float(det[5])
+                    else:
+                        x1, y1, x2, y2 = float(det[0]), float(det[1]), float(det[2]), float(det[3])
+                        score = float(det[4])
                     dt_anns.append({
                         'image_id': img_id,
                         'category_id': cat_ids[cls_idx],
