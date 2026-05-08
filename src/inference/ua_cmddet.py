@@ -7,7 +7,9 @@ loop (denormalise → corrupt → renormalise), bypassing pipeline injection.
 
 Normalisation: mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375]
 Data dict keys (TSDroneVehicleDataset): 'img' = RGB, 'img_i' = TIR.
-Images come out of the dataloader as float tensors inside DataContainers.
+Eval: inline COCO bbox eval using dataset.coco_r / cat_ids_r / img_ids_r.
+The model may return a dict (one entry per stream); we use the last value
+(fused stream) if so.
 """
 
 import sys
@@ -18,27 +20,20 @@ from pathlib import Path
 
 from .base import BaseInferenceRunner
 
-# Normalisation constants from UACMDet.py img_norm_cfg
 _MEAN = np.array([123.675, 116.28, 103.53], dtype=np.float32)
 _STD  = np.array([58.395,  57.12,  57.375], dtype=np.float32)
-
-# Map modality name → data dict key used by TSDroneVehicleDataset
 _MODALITY_KEY = {'rgb': 'img', 'tir': 'img_i'}
 
 
 def _tensor_to_uint8(t):
-    """DataContainer float tensor [1,3,H,W] → uint8 numpy [H,W,3] BGR→RGB."""
-    arr = t[0].permute(1, 2, 0).cpu().numpy()          # [H,W,3]
-    arr = arr * _STD + _MEAN                            # denormalise
+    arr = t[0].permute(1, 2, 0).cpu().numpy()
+    arr = arr * _STD + _MEAN
     return np.clip(arr, 0, 255).astype(np.uint8)
 
 
 def _uint8_to_tensor(arr, device):
-    """uint8 numpy [H,W,3] → normalised float tensor [1,3,H,W]."""
-    f = arr.astype(np.float32)
-    f = (f - _MEAN) / _STD                             # normalise
-    t = torch.from_numpy(f).permute(2, 0, 1).unsqueeze(0)
-    return t.to(device)
+    f = (arr.astype(np.float32) - _MEAN) / _STD
+    return torch.from_numpy(f).permute(2, 0, 1).unsqueeze(0).to(device)
 
 
 class UACMDetRunner(BaseInferenceRunner):
@@ -46,7 +41,6 @@ class UACMDetRunner(BaseInferenceRunner):
     def __init__(self, config_path: str, device_id: int = 0):
         self.config_path = str(config_path)
         self.device_id = device_id
-        self.model = None
         self._wrapped = None
 
     def load_model(self, checkpoint_path: Path) -> None:
@@ -70,46 +64,33 @@ class UACMDetRunner(BaseInferenceRunner):
         raise NotImplementedError("Use evaluate() for mAP computation.")
 
     def _corrupt_batch(self, data, corruption_type, modality, severity, zero_modality):
-        """Apply corruption / zeroing directly to tensor data in-place."""
         from src.corruption.pipeline import apply_corruption
-        from mmcv.parallel import DataContainer
-
-        device = None
 
         if corruption_type is not None:
             key = _MODALITY_KEY[modality]
             if key in data:
-                dc = data[key]
-                tensor = dc.data[0]                    # [1,3,H,W] float
+                tensor = data[key].data[0]
                 device = tensor.device
                 img_uint8 = _tensor_to_uint8(tensor)
                 img_corrupted = apply_corruption(img_uint8, modality, corruption_type, severity)
-                corrupted_t = _uint8_to_tensor(img_corrupted, device)
-                data[key] = DataContainer([corrupted_t], stack=dc.stack,
-                                          padding_value=dc.padding_value,
-                                          cpu_only=dc.cpu_only)
+                tensor.copy_(_uint8_to_tensor(img_corrupted, device))
 
         if zero_modality is not None:
             key = _MODALITY_KEY[zero_modality]
             if key in data:
-                dc = data[key]
-                tensor = dc.data[0]
-                data[key] = DataContainer([torch.zeros_like(tensor)],
-                                          stack=dc.stack,
-                                          padding_value=dc.padding_value,
-                                          cpu_only=dc.cpu_only)
+                data[key].data[0].zero_()
+
         return data
 
     def evaluate(self, corruption_type=None, modality=None, severity=None,
                  zero_modality=None) -> float:
         """Run full test-set evaluation with optional corruption / modality zeroing.
 
-        UA-CMDet (AerialDetection) has no pipeline list in its config, so
-        corruptions are applied directly to the loaded image tensors here
-        rather than via PIPELINES injection.
-        Returns mAP@0.5 as a float.
+        Uses inline COCO bbox eval (IoU@0.5) against coco_r annotations.
+        Returns mAP@IoU=0.5 as a float.
         """
         from mmdet.datasets import get_dataset, build_dataloader
+        from pycocotools.cocoeval import COCOeval
 
         cfg = mmcv.Config.fromfile(self.config_path)
         dataset = get_dataset(cfg.data.test)
@@ -117,24 +98,52 @@ class UACMDetRunner(BaseInferenceRunner):
             dataset, imgs_per_gpu=1, workers_per_gpu=4,
             dist=False, shuffle=False)
 
-        apply_corruption = (corruption_type is not None or zero_modality is not None)
+        do_corrupt = (corruption_type is not None or zero_modality is not None)
 
         results = []
         for data in data_loader:
-            if apply_corruption:
+            if do_corrupt:
                 data = self._corrupt_batch(
                     data, corruption_type, modality, severity, zero_modality)
             with torch.no_grad():
                 result = self._wrapped(return_loss=False, rescale=True, **data)
             results.append(result)
 
-        if hasattr(dataset, 'evaluate'):
-            eval_out = dataset.evaluate(results)
-            for key in ('mAP', 'bbox_mAP', 'AP50'):
-                if key in eval_out:
-                    return float(eval_out[key])
+        # Build COCO-format detections from results.
+        # Model may return a dict keyed by stream name — take the last entry (fused).
+        # Each per-image result is a list of class arrays shaped [N, >=5]:
+        #   [x1, y1, x2, y2, score, ...] in pixel coordinates.
+        coco_gt = dataset.coco_r
+        cat_ids = dataset.cat_ids_r
+        img_ids = dataset.img_ids_r
+        dt_anns = []
 
-        raise RuntimeError(
-            "UA-CMDet dataset.evaluate() did not return a recognised mAP key. "
-            "Check models/ua_cmddet/eval/DroneVehicleEval.py for the correct "
-            "evaluation interface and update this runner accordingly.")
+        for idx, result in enumerate(results):
+            if isinstance(result, dict):
+                result = list(result.values())[-1]  # fused stream is last
+            img_id = img_ids[idx]
+            for cls_idx, dets in enumerate(result):
+                if dets is None or len(dets) == 0:
+                    continue
+                dets = np.asarray(dets)
+                for det in dets:
+                    x1, y1, x2, y2, score = (float(det[0]), float(det[1]),
+                                              float(det[2]), float(det[3]),
+                                              float(det[4]))
+                    dt_anns.append({
+                        'image_id': img_id,
+                        'category_id': cat_ids[cls_idx],
+                        'bbox': [x1, y1, max(0.0, x2 - x1), max(0.0, y2 - y1)],
+                        'score': score,
+                    })
+
+        if not dt_anns:
+            return 0.0
+
+        coco_dt = coco_gt.loadRes(dt_anns)
+        ev = COCOeval(coco_gt, coco_dt, 'bbox')
+        ev.params.iouThrs = np.array([0.5])
+        ev.evaluate()
+        ev.accumulate()
+        ev.summarize()
+        return float(ev.stats[0])
