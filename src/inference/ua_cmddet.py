@@ -82,13 +82,20 @@ class UACMDetRunner(BaseInferenceRunner):
     def run(self, rgb, tir):
         raise NotImplementedError("Use evaluate() for mAP computation.")
 
+    @staticmethod
+    def _get_img_tensor(val):
+        """AerialDetection dataloader returns plain list [tensor], not DataContainer."""
+        if isinstance(val, list):
+            return val[0]
+        return val.data[0]  # DataContainer fallback
+
     def _corrupt_batch(self, data, corruption_type, modality, severity, zero_modality):
         from src.corruption.pipeline import apply_corruption
 
         if corruption_type is not None:
             key = _MODALITY_KEY[modality]
             if key in data:
-                tensor = data[key].data[0]
+                tensor = self._get_img_tensor(data[key])
                 device = tensor.device
                 img_uint8 = _tensor_to_uint8(tensor)
                 img_corrupted = apply_corruption(img_uint8, modality, corruption_type, severity)
@@ -97,7 +104,7 @@ class UACMDetRunner(BaseInferenceRunner):
         if zero_modality is not None:
             key = _MODALITY_KEY[zero_modality]
             if key in data:
-                data[key].data[0].zero_()
+                self._get_img_tensor(data[key]).zero_()
 
         return data
 
