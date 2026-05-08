@@ -1,0 +1,9 @@
+{
+  "model": "early_fusion",
+  "modality": "rgb",
+  "corruption": "motion_blur",
+  "severity": 2,
+  "config": "rgb_only",
+  "zeroed_stream": "tir",
+  "map": 0.0916
+}

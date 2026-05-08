@@ -1,0 +1,9 @@
+{
+  "model": "c2former",
+  "modality": "rgb",
+  "corruption": "motion_blur",
+  "severity": 1,
+  "config": "rgb_only",
+  "zeroed_stream": "tir",
+  "map": 0.3886
+}

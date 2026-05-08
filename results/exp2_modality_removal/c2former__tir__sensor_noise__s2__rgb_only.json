@@ -1,0 +1,9 @@
+{
+  "model": "c2former",
+  "modality": "tir",
+  "corruption": "sensor_noise",
+  "severity": 2,
+  "config": "rgb_only",
+  "zeroed_stream": "tir",
+  "map": 0.4339
+}

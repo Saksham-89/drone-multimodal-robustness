@@ -1,0 +1,9 @@
+{
+  "model": "early_fusion",
+  "modality": "tir",
+  "corruption": "sensor_noise",
+  "severity": 1,
+  "config": "tir_only",
+  "zeroed_stream": "rgb",
+  "map": 0.2657
+}

@@ -3,7 +3,7 @@
   "modality": "tir",
   "corruption": "intensity_shift",
   "severity": 3,
-  "map": 0.67012619972229,
-  "clean_map": 0.7045733332633972,
-  "ra": 0.9511092289264523
+  "config": "tir_only",
+  "zeroed_stream": "rgb",
+  "map": 0.3267
 }

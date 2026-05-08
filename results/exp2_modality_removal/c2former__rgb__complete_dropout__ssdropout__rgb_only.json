@@ -1,0 +1,9 @@
+{
+  "model": "c2former",
+  "modality": "rgb",
+  "corruption": "complete_dropout",
+  "severity": null,
+  "config": "rgb_only",
+  "zeroed_stream": "tir",
+  "map": 0.0
+}
