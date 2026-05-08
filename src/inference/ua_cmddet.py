@@ -109,10 +109,10 @@ class UACMDetRunner(BaseInferenceRunner):
         rather than via PIPELINES injection.
         Returns mAP@0.5 as a float.
         """
-        from mmdet.datasets import build_dataset, build_dataloader
+        from mmdet.datasets import get_dataset, build_dataloader
 
         cfg = mmcv.Config.fromfile(self.config_path)
-        dataset = build_dataset(cfg.data.test)
+        dataset = get_dataset(cfg.data.test)
         data_loader = build_dataloader(
             dataset, imgs_per_gpu=1, workers_per_gpu=4,
             dist=False, shuffle=False)
