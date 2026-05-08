@@ -54,7 +54,7 @@ def run_baseline(model_name: str, runner) -> float:
     out_file = RESULTS_DIR / f'{model_name}.json'
     if out_file.exists():
         result = json.loads(out_file.read_text())
-        print(f'[SKIP] {model_name} already done — mAP={result["map"]:.4f}')
+        print(f'[SKIP] {model_name} already done -- mAP={result["map"]:.4f}')
         return result['map']
 
     print(f'[RUN ] {model_name} clean baseline...')
