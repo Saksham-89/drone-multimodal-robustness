@@ -28,7 +28,7 @@ from .base import BaseInferenceRunner
 
 _MEAN = np.array([123.675, 116.28, 103.53], dtype=np.float32)
 _STD  = np.array([58.395,  57.12,  57.375], dtype=np.float32)
-_MODALITY_KEY = {'rgb': 'img', 'tir': 'img_i'}
+_MODALITY_KEY = {'rgb': 'img_r', 'tir': 'img_i'}
 
 
 def _tensor_to_uint8(t):
@@ -140,8 +140,9 @@ class UACMDetRunner(BaseInferenceRunner):
 
         # Build COCO-format detections.
         # Per-image result: list of per-class arrays shaped [N, K]:
+        #   K=9 → polygon OBB [x1,y1,x2,y2,x3,y3,x4,y4, score] ← UA-CMDet
+        #   K=6 → rotated OBB [cx, cy, w, h, angle_deg, score]
         #   K=5 → HBB [x1, y1, x2, y2, score]
-        #   K=6 → OBB [cx, cy, w, h, angle_deg, score]
         coco_gt = dataset.coco_r
         cat_ids = dataset.cat_ids_r
         img_ids = dataset.img_ids_r
@@ -159,10 +160,20 @@ class UACMDetRunner(BaseInferenceRunner):
                     dets = dets[np.newaxis]  # single detection
                 for det in dets:
                     k = len(det)
-                    if k >= 6:
+                    if k == 9:
+                        # Polygon OBB: [x1,y1,x2,y2,x3,y3,x4,y4, score]
+                        pts = det[:8].reshape(4, 2)
+                        x1 = float(pts[:, 0].min())
+                        y1 = float(pts[:, 1].min())
+                        x2 = float(pts[:, 0].max())
+                        y2 = float(pts[:, 1].max())
+                        score = float(det[8])
+                    elif k == 6:
+                        # Rotated OBB: [cx, cy, w, h, angle_deg, score]
                         x1, y1, x2, y2 = _obb_to_aabb(det[0], det[1], det[2], det[3], det[4])
                         score = float(det[5])
                     else:
+                        # HBB: [x1, y1, x2, y2, score]
                         x1, y1, x2, y2 = float(det[0]), float(det[1]), float(det[2]), float(det[3])
                         score = float(det[4])
                     dt_anns.append({
