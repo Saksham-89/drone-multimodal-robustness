@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=exp1_early_fusion
 #SBATCH --partition=main-gpu
-#SBATCH --exclude=ctit085
+#SBATCH --exclude=ctit084,ctit085
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G

@@ -1,0 +1,9 @@
+{
+  "model": "ua_cmddet",
+  "modality": "tir",
+  "corruption": "blur",
+  "severity": 3,
+  "map": 0.2122818517105251,
+  "clean_map": 0.21366788580730478,
+  "ra": 0.9935131379638882
+}

@@ -1,0 +1,9 @@
+{
+  "model": "early_fusion",
+  "modality": "tir",
+  "corruption": "complete_dropout",
+  "severity": null,
+  "config": "rgb_only",
+  "zeroed_stream": "tir",
+  "map": 0.14986558258533478
+}

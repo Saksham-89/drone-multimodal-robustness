@@ -3,7 +3,7 @@
   "modality": "tir",
   "corruption": "complete_dropout",
   "severity": null,
-  "map": 0.1498,
+  "map": 0.14983943104743958,
   "clean_map": 0.48484548926353455,
-  "ra": 0.3090
+  "ra": 0.3090457359416524
 }

@@ -1,0 +1,9 @@
+{
+  "model": "ua_cmddet",
+  "modality": "tir",
+  "corruption": "sensor_noise",
+  "severity": 2,
+  "map": 0.19200813720593976,
+  "clean_map": 0.21366788580730478,
+  "ra": 0.8986289000823514
+}

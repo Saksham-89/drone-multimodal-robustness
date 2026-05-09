@@ -1,0 +1,9 @@
+{
+  "model": "ua_cmddet",
+  "modality": "rgb",
+  "corruption": "low_contrast",
+  "severity": 1,
+  "map": 0.1802894438599721,
+  "clean_map": 0.21366788580730478,
+  "ra": 0.8437835343331151
+}
