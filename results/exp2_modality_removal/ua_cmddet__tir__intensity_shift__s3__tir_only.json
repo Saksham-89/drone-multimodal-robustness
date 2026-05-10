@@ -1,0 +1,9 @@
+{
+  "model": "ua_cmddet",
+  "modality": "tir",
+  "corruption": "intensity_shift",
+  "severity": 3,
+  "config": "tir_only",
+  "zeroed_stream": "rgb",
+  "map": 0.0015455699442072884
+}

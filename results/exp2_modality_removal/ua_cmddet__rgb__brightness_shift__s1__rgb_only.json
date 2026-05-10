@@ -1,0 +1,9 @@
+{
+  "model": "ua_cmddet",
+  "modality": "rgb",
+  "corruption": "brightness_shift",
+  "severity": 1,
+  "config": "rgb_only",
+  "zeroed_stream": "tir",
+  "map": 0.18203604816740432
+}
