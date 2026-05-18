@@ -47,8 +47,6 @@ logs/
 *.err
 slurm-*.out
 
-# ── Generated figures (reproducible from results/) ────────────────────────────
-analysis/figures/
 
 # ── OS ─────────────────────────────────────────────────────────────────────────
 .DS_Store
