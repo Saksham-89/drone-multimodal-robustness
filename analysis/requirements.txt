@@ -1,0 +1,9 @@
+pandas>=1.5
+numpy
+scipy>=1.9
+scikit-learn
+matplotlib
+seaborn
+pingouin
+jupyter
+pyarrow

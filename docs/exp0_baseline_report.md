@@ -2,7 +2,7 @@
 
 **Purpose**: Establish clean-data mAP for all three models on the DroneVehicle test split. These figures are the denominator in the Resistance Ability (RA) metric used throughout the corruption experiments.
 
-**Status**: Early Fusion and C2Former complete. UA-CMDet test result still pending — check `results/exp0_baseline/ua_cmddet.json` (job 492525 was queued; verify whether it completed or needs resubmission).
+**Status**: All three models complete.
 
 ---
 
@@ -12,7 +12,7 @@
 |---|---|---|---|---|---|---|
 | Early Fusion | Early (concat) | 24 | **0.485** | 0.488 | −0.003 | 491917 |
 | C2Former | Intermediate (cross-attn) | 24 | **0.705** | 0.715 | −0.010 | 492464 |
-| UA-CMDet | Late (uncertainty) | 12 | **TBD** | — | — | 492525 |
+| UA-CMDet | Late (uncertainty) | 12 | **0.214** | — | — | 492525 |
 | UA-CMDet (published) | Late (uncertainty) | — | ~0.412 | — | — | Sun et al. 2022 |
 
 ---
@@ -39,7 +39,19 @@
 | bus | 4,161 | 0.960 | 0.889 |
 | van | 3,960 | 0.940 | 0.515 |
 
-### UA-CMDet — to be filled in
+### UA-CMDet (mAP 0.214, HBB eval)
+
+Note: UA-CMDet uses axis-aligned COCO bbox IoU (HBB), not OBB polygon IoU. The published figure (0.412) used the DOTA devkit with polyiou on oriented boxes — a different eval protocol. All UA-CMDet RA comparisons are relative to this 0.214 baseline so RA is internally consistent.
+
+| Class | AP |
+|---|---|
+| car | — |
+| truck | — |
+| freight_car | — |
+| bus | — |
+| van | — |
+
+Per-class breakdown not available (COCOeval aggregates by category but UA-CMDet eval output was captured as overall mAP only).
 
 ---
 
@@ -97,4 +109,4 @@ The per-class gap between C2Former and Early Fusion on truck (0.682 vs 0.345) is
 
 - `results/exp0_baseline/early_fusion.json` — Early Fusion test result
 - `results/exp0_baseline/c2former.json` — C2Former test result
-- `results/exp0_baseline/ua_cmddet.json` — UA-CMDet test result (TBD)
+- `results/exp0_baseline/ua_cmddet.json` — UA-CMDet test result (mAP 0.2137, job 492525)

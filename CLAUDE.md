@@ -197,6 +197,29 @@ Use `main-cpu` or `main-gpu` as the partition specification. Do **not** use `gpu
 - UA-CMDet uses separate branches + uncertainty-guided fusion weights; built on AerialDetection
 - Early fusion: concatenation before encoder; our own implementation
 
+### Experiment Reports
+
+After every experiment completes, write a Markdown report to `docs/` following this naming convention:
+
+| Experiment | File |
+|---|---|
+| exp0 baseline | `docs/exp0_baseline_report.md` |
+| exp1 corruption — per model | `docs/exp1_{model}_report.md` |
+| exp2 modality removal — per model | `docs/exp2_{model}_report.md` |
+| Cross-model comparison | `docs/exp{N}_crossmodel_report.md` |
+
+Each report must include:
+1. Header block: date, model, experiment script, dataset, metric, status (N/N conditions complete)
+2. Overview: what the experiment tests, architecture note, clean baseline mAP
+3. Results tables: mAP and RA per corruption × severity, matching the format in existing reports
+4. Key findings: numbered, each finding grounded in specific numbers from the results
+5. Implications for RQ1 or RQ2 (whichever the experiment addresses)
+6. Data reference: result file paths, checkpoint, experiment script
+
+Reference existing reports in `docs/` for format. Reports are written after results are synced locally from the HPC.
+
+---
+
 ### What NOT to Do
 - Do not fine-tune models on corrupted data — evaluation only
 - Do not apply corruptions to the training split

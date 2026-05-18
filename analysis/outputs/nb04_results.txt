@@ -1,0 +1,41 @@
+=== NB04 MODALITY ANALYSIS ===
+
+--- Single-modality clean baselines ---
+              clean_rgb_only_map  rgb_pct_of_dual  clean_tir_only_map  tir_pct_of_dual
+model_label                                                                           
+C2Former                  0.4339          61.5834              0.3875          55.0034
+Early Fusion              0.1499          30.9100              0.2977          61.4030
+UA-CMDet                  0.2105          98.5098              0.0019           0.8801
+
+--- Dominance Index test (Wilcoxon vs 0) ---
+          model   n  mean_DI  median_DI      W  p_value dominant_modality  significant
+0  Early Fusion  23   0.5394     0.5716   21.0   0.0004               TIR         True
+1      C2Former  23  -0.0586    -0.0482  118.0   0.5600               RGB        False
+2      UA-CMDet  23  -0.8985    -0.9897    2.0   0.0000               RGB         True
+
+--- Fusion Gain per model ---
+                mean     std  median  min_fg  max_fg
+model_label                                         
+C2Former      0.2026  0.0787  0.2253  0.0000  0.2967
+Early Fusion  0.1145  0.0821  0.1332 -0.0637  0.2309
+UA-CMDet     -0.0026  0.0090  0.0010 -0.0306  0.0064
+
+--- TIR fallback under S3 RGB corruption ---
+model_label       C2Former  Early Fusion  UA-CMDet
+corruption                                        
+brightness_shift    0.3875        0.2977    0.0019
+gaussian_noise      0.3875        0.2977    0.0019
+low_contrast        0.3875        0.2977    0.0019
+motion_blur         0.3875        0.2977    0.0019
+
+--- RGB fallback under S3 TIR corruption ---
+model_label      C2Former  Early Fusion  UA-CMDet
+corruption                                       
+blur               0.4339        0.1499    0.2105
+intensity_shift    0.4339        0.1499    0.2105
+sensor_noise       0.4339        0.1499    0.2105
+
+--- Spearman rho: dual RA vs fallback efficiency ---
+early_fusion: rho=-0.8162  p=0.0000  n=23
+c2former: rho=-0.7223  p=0.0001  n=23
+ua_cmddet: rho=-0.6433  p=0.0009  n=23

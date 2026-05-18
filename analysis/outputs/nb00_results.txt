@@ -1,0 +1,35 @@
+=== NB00 VALIDATION RESULTS ===
+
+--- Row counts ---
+exp0: 3 rows
+exp1: 69 rows
+exp2: 146 rows
+
+--- Severities in exp1 ---
+['1', '2', '3', 'sdropout']
+
+--- exp0 baselines ---
+       model      map
+    c2former 0.704573
+early_fusion 0.484845
+   ua_cmddet 0.213668
+
+--- RA range (exp1) ---
+min=0.0058  max=1.0150  nulls=0
+
+--- RA > 1.0 rows ---
+        model modality        corruption  severity        ra
+62  ua_cmddet      tir  complete_dropout  sdropout  1.007161
+63  ua_cmddet      tir   intensity_shift         1  1.002931
+64  ua_cmddet      tir   intensity_shift         2  1.007892
+65  ua_cmddet      tir   intensity_shift         3  1.014978
+
+--- Cross-consistency (exp1.clean_map vs exp0.map) ---
+early_fusion: clean_map=0.484845 baseline=0.484845 diff=0.00e+00 [OK]
+c2former: clean_map=0.704573 baseline=0.704573 diff=0.00e+00 [OK]
+ua_cmddet: clean_map=0.213668 baseline=0.213668 diff=0.00e+00 [OK]
+
+--- Parquet exports ---
+exp0_df.parquet: 6.6 KB
+exp1_df.parquet: 5.6 KB
+exp2_df.parquet: 5.1 KB

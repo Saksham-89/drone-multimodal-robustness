@@ -1,0 +1,48 @@
+=== NB01 DESCRIPTIVE STATISTICS ===
+
+--- Summary stats (all 23 conditions) ---
+               n   mean    std  median    IQR  min_ra  max_ra     CV
+model                                                               
+C2Former      23 0.8701 0.1138  0.8932 0.1228  0.5500  0.9951 0.1308
+Early Fusion  23 0.8119 0.1781  0.8704 0.2026  0.3090  0.9943 0.2193
+UA-CMDet      23 0.7477 0.3069  0.8438 0.2921  0.0058  1.0150 0.4105
+
+--- Mean RA by modality stream (graded only) ---
+               mean           std       
+modality        rgb    tir    rgb    tir
+model_label                             
+C2Former     0.8852 0.9139 0.0683 0.0764
+Early Fusion 0.7936 0.9142 0.1573 0.0662
+UA-CMDet     0.6268 0.9625 0.2757 0.0597
+
+--- Complete dropout RA ---
+modality        rgb    tir
+model_label               
+C2Former     0.5500 0.6158
+Early Fusion 0.6141 0.3090
+UA-CMDet     0.0058 1.0072
+
+--- Top 15 worst RA conditions ---
+           model modality        corruption  severity    map     ra
+1       UA-CMDet      rgb  complete_dropout  sdropout 0.0012 0.0058
+2       UA-CMDet      rgb    gaussian_noise         3 0.0091 0.0426
+3       UA-CMDet      rgb    gaussian_noise         2 0.0357 0.1672
+4   Early Fusion      tir  complete_dropout  sdropout 0.1498 0.3090
+5       UA-CMDet      rgb    gaussian_noise         1 0.0912 0.4270
+6   Early Fusion      rgb      low_contrast         3 0.2340 0.4827
+7       C2Former      rgb  complete_dropout  sdropout 0.3875 0.5500
+8       UA-CMDet      rgb       motion_blur         3 0.1239 0.5799
+9   Early Fusion      rgb      low_contrast         2 0.2818 0.5812
+10  Early Fusion      rgb  complete_dropout  sdropout 0.2977 0.6141
+11      C2Former      tir  complete_dropout  sdropout 0.4339 0.6158
+12  Early Fusion      rgb      low_contrast         1 0.3102 0.6397
+13      UA-CMDet      rgb      low_contrast         3 0.1449 0.6780
+14      UA-CMDet      rgb  brightness_shift         3 0.1523 0.7129
+15  Early Fusion      rgb    gaussian_noise         3 0.3518 0.7256
+
+--- Per-class baseline AP ---
+                car  truck  freight_car    bus    van    map
+model                                                       
+C2Former     0.8940 0.6820       0.5420 0.8890 0.5150 0.7046
+Early Fusion    NaN    NaN          NaN    NaN    NaN 0.4848
+UA-CMDet        NaN    NaN          NaN    NaN    NaN 0.2137
