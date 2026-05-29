@@ -1,8 +1,0 @@
-=== NB05 FIGURES ===
-
---- Figure files ---
-  fig_01_ra_heatmap.png: 393.0 KB
-  fig_02_severity_lines.png: 260.2 KB
-  fig_03_ra_distributions.png: 133.3 KB
-  fig_04_modality_bars.png: 186.4 KB
-  fig_05_dominance_index.png: 235.0 KB

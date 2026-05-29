@@ -15,7 +15,7 @@ Usage (run from project root, one model at a time):
 Published baselines (DroneVehicle test split, mAP@0.5):
     UA-CMDet : ~0.412  (Sun et al., TCSVT 2022)
     C2Former  : see Yuan & Wei (TGRS 2024) Table results
-    Early Fusion: 0.485 (our run, job 491917)
+    Early Fusion: 0.485 (our implementation)
 """
 
 import argparse

@@ -1,6 +1,6 @@
 """Experiment 1 — Corruption benchmark (RQ1).
 
-For each model × each of the 29 corruption conditions:
+For each model × each of the 23 corruption conditions:
   - Apply corruption to the relevant modality stream
   - Run full dual-modality inference on the test split
   - Save mAP and RA = corrupted_mAP / clean_mAP

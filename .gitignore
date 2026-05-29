@@ -59,6 +59,26 @@ desktop.ini
 *.swp
 *.swo
 .claude/
+CLAUDE.md
+HANDOFF.md
+
+# ── Analysis — generated/derived artifacts ─────────────────────────────────────
+analysis/outputs/
+analysis/data/*.parquet
+analysis/figures/nb0*.png
+
+# ── Training run logs (checkpoints already ignored above) ──────────────────────
+work_dirs/
+
+# ── Test artifacts ─────────────────────────────────────────────────────────────
+tests/corruption_grid.png
+
+# ── Internal / scratch scripts (not part of the reproducible pipeline) ─────────
+scripts/debug_ua_cmddet_result.py
+scripts/gen_exp2_local.py
+
+# ── Model submodule case variant ───────────────────────────────────────────────
+models/DOTA_devkit
 
 # ── Misc ───────────────────────────────────────────────────────────────────────
 *.tmp

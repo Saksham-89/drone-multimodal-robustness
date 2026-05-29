@@ -14,8 +14,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.corruption.params import ALL_CONDITIONS, GRADED_CONDITIONS, TIR_CORRUPTIONS
 from src.corruption.pipeline import apply_corruption, zero_modality
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
-
 RNG = np.random.default_rng(42)
 
 @pytest.fixture
@@ -29,7 +27,6 @@ def tir_image():
     return RNG.integers(30, 220, size=(64, 64), dtype=np.uint8)
 
 
-# ── Test 1: ALL_CONDITIONS completeness ──────────────────────────────────────
 
 def test_all_conditions_count():
     """Exactly 23 corruption conditions must be defined (21 graded + 2 dropouts)."""
@@ -38,20 +35,16 @@ def test_all_conditions_count():
     )
 
 
-# ── Test 2: Modality coverage ─────────────────────────────────────────────────
 
 def test_modality_coverage():
-    """Both 'rgb' and 'tir' must appear in ALL_CONDITIONS."""
     modalities = {mod for mod, _, _ in ALL_CONDITIONS}
     assert "rgb" in modalities
     assert "tir" in modalities
 
 
-# ── Test 3: Shape preservation ────────────────────────────────────────────────
 
 @pytest.mark.parametrize("modality,corruption_type,severity", ALL_CONDITIONS)
 def test_shape_preserved_rgb(modality, corruption_type, severity, rgb_image, tir_image):
-    """Output shape must match input shape for every condition."""
     image = rgb_image if modality == "rgb" else tir_image
     result = apply_corruption(image, modality, corruption_type, severity)
     assert result.shape == image.shape, (
@@ -60,11 +53,9 @@ def test_shape_preserved_rgb(modality, corruption_type, severity, rgb_image, tir
     )
 
 
-# ── Test 4: Dtype preservation ────────────────────────────────────────────────
 
 @pytest.mark.parametrize("modality,corruption_type,severity", ALL_CONDITIONS)
 def test_dtype_uint8(modality, corruption_type, severity, rgb_image, tir_image):
-    """Output must always be uint8."""
     image = rgb_image if modality == "rgb" else tir_image
     result = apply_corruption(image, modality, corruption_type, severity)
     assert result.dtype == np.uint8, (
@@ -72,18 +63,15 @@ def test_dtype_uint8(modality, corruption_type, severity, rgb_image, tir_image):
     )
 
 
-# ── Test 5: Value range ───────────────────────────────────────────────────────
 
 @pytest.mark.parametrize("modality,corruption_type,severity", ALL_CONDITIONS)
 def test_value_range(modality, corruption_type, severity, rgb_image, tir_image):
-    """All pixels must remain in [0, 255] after corruption."""
     image = rgb_image if modality == "rgb" else tir_image
     result = apply_corruption(image, modality, corruption_type, severity)
     assert result.min() >= 0, f"Pixel below 0 for {modality}/{corruption_type}/s{severity}"
     assert result.max() <= 255, f"Pixel above 255 for {modality}/{corruption_type}/s{severity}"
 
 
-# ── Test 6: Complete dropout produces all zeros ───────────────────────────────
 
 def test_rgb_dropout_all_zeros(rgb_image):
     result = apply_corruption(rgb_image, "rgb", "complete_dropout", None)
@@ -94,7 +82,6 @@ def test_tir_dropout_all_zeros(tir_image):
     assert np.all(result == 0), "TIR dropout should produce all-zero image"
 
 
-# ── Test 7: zero_modality produces all zeros ──────────────────────────────────
 
 def test_zero_modality_rgb(rgb_image):
     result = zero_modality(rgb_image)
@@ -107,7 +94,6 @@ def test_zero_modality_tir(tir_image):
     assert np.all(result == 0)
 
 
-# ── Test 8: Corruption actually modifies the image ───────────────────────────
 
 @pytest.mark.parametrize("modality,corruption_type,severity", GRADED_CONDITIONS)
 def test_corruption_modifies_image(modality, corruption_type, severity, rgb_image, tir_image):
@@ -120,7 +106,6 @@ def test_corruption_modifies_image(modality, corruption_type, severity, rgb_imag
     )
 
 
-# ── Test 9: Severity monotonicity ─────────────────────────────────────────────
 
 @pytest.mark.parametrize("modality,corruption_type", [
     ("rgb", "gaussian_noise"),
@@ -142,14 +127,9 @@ def test_severity_monotonicity(modality, corruption_type, rgb_image, tir_image):
     )
 
 
-# ── Test 10: TIR sensor noise uses custom sigma (not library defaults) ────────
 
 def test_tir_sensor_noise_sigma():
-    """
-    TIR sensor noise sigma values (0.15/0.20/0.35) differ from the imagecorruptions
-    library's gaussian_noise defaults (0.08/0.12/0.18). Verify our params are used
-    by checking that higher-sigma conditions produce proportionally more noise.
-    """
+    """Verify custom TIR sigma values are used and produce monotonically increasing noise."""
     # Flat grey image so all deviation comes from noise
     image = np.full((128, 128), 128, dtype=np.uint8)
     std_values = [TIR_CORRUPTIONS["sensor_noise"][s]["std"] for s in [1, 2, 3]]
@@ -172,7 +152,6 @@ def test_tir_sensor_noise_sigma():
         )
 
 
-# ── Test 11: Invalid inputs raise cleanly ─────────────────────────────────────
 
 def test_invalid_modality(rgb_image):
     with pytest.raises(ValueError, match="Unknown modality"):

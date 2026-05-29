@@ -1,11 +1,7 @@
-"""Pipeline transforms for injecting corruptions and modality dropout.
+"""mmdet pipeline transforms for corruption injection and modality dropout.
 
-Registered into mmdet's PIPELINES registry so they work with both
-mmrotate (C2Former / Early Fusion) and UA-CMDet's own mmdet fork,
-depending on which mmdet is first on PYTHONPATH.
-
-Insert after LoadPairedImageFromFile and before any normalisation step
-so that corruptions operate on raw uint8 pixel values.
+Insert after LoadPairedImageFromFile, before normalisation, so transforms
+operate on raw uint8 pixel values.
 """
 
 import numpy as np

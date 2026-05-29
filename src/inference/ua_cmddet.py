@@ -1,21 +1,11 @@
 """Inference runner for UA-CMDet (Sun et al., TCSVT 2022).
 
-UA-CMDet is built on AerialDetection (old mmdetection fork). It does NOT
-use mmdet's PIPELINES registry — the config has no 'pipeline' list.
-Corruptions are applied directly to normalised image tensors in the data
-loop (denormalise → corrupt → renormalise), bypassing pipeline injection.
+Built on AerialDetection (old mmdetection 1.x fork), which does not use mmdet's
+PIPELINES registry. Corruptions are applied by denormalising tensors in-place,
+corrupting as uint8, then renormalising — bypassing pipeline injection entirely.
 
-Normalisation: mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375]
-Data dict keys (TSDroneVehicleDataset): 'img' = RGB, 'img_i' = TIR.
-Eval: inline COCO bbox eval (IoU@0.5) against coco_r annotations.
-
-Result format handling:
-  - Model returns a list (batch-list) or a dict keyed by stream name.
-  - If dict, take the last value (fused stream).
-  - Per-image result is a list of per-class arrays:
-      HBB format (5 values): [x1, y1, x2, y2, score]
-      OBB format (6 values): [cx, cy, w, h, angle_deg, score]
-    Both are converted to axis-aligned [x1,y1,w,h] for COCO eval.
+Data dict keys: 'img_r' = RGB, 'img_i' = TIR.
+Eval: inline COCO bbox (HBB, IoU@0.5) against coco_r annotations.
 """
 
 import sys
