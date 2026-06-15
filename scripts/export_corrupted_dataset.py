@@ -44,10 +44,10 @@ from src.corruption.params import ALL_CONDITIONS
 
 def _find_pair(img_dir: Path, stem: str):
     for rgb_p, ir_p in [
+        (img_dir / f'{stem}.jpg',          img_dir / f'{stem}_tir.jpg'),   # actual convention
+        (img_dir / f'{stem}.jpg',          img_dir / f'{stem}_ir.jpg'),
         (img_dir / 'rgb' / f'{stem}.jpg',  img_dir / 'ir' / f'{stem}.jpg'),
-        (img_dir / f'{stem}.jpg',           img_dir / f'{stem}_ir.jpg'),
-        (img_dir / 'rgb' / f'{stem}.png',  img_dir / 'ir' / f'{stem}.png'),
-        (img_dir / f'{stem}.png',           img_dir / f'{stem}_ir.png'),
+        (img_dir / f'{stem}.png',          img_dir / f'{stem}_tir.png'),
     ]:
         if rgb_p.exists() and ir_p.exists():
             return rgb_p, ir_p
@@ -236,8 +236,11 @@ def main():
     label_dir = data_root / 'test' / 'testMatchedLabel'
     img_dir   = data_root / 'test' / 'testMatchedImg'
 
-    # Discover all image stems
-    stems = sorted(p.stem for p in label_dir.glob('*.txt'))
+    # Discover all image stems (labels are {id}_tir.txt → strip suffix to get {id})
+    stems = sorted(
+        p.stem[:-4] if p.stem.endswith('_tir') else p.stem
+        for p in label_dir.glob('*.txt')
+    )
     print(f'Found {len(stems)} test images.')
 
     # Write metadata and README
@@ -252,8 +255,8 @@ def main():
     out_labels = out_root / 'labels'
     out_labels.mkdir(exist_ok=True)
     for stem in tqdm(stems, desc='Copying labels'):
-        src = label_dir / f'{stem}.txt'
-        dst = out_labels / f'{stem}.txt'
+        src = label_dir / f'{stem}_tir.txt'   # actual label filename convention
+        dst = out_labels / f'{stem}.txt'       # strip _tir in output for cleanliness
         if not dst.exists():
             shutil.copy2(str(src), str(dst))
 

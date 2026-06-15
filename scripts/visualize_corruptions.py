@@ -31,10 +31,10 @@ from src.corruption.pipeline import apply_corruption
 def _find_pair(img_dir: Path, stem: str):
     """Try known DroneVehicle naming conventions. Returns (rgb_path, ir_path) or (None, None)."""
     candidates = [
-        (img_dir / 'rgb' / f'{stem}.jpg',  img_dir / 'ir'  / f'{stem}.jpg'),
-        (img_dir / f'{stem}.jpg',           img_dir / f'{stem}_ir.jpg'),
-        (img_dir / 'rgb' / f'{stem}.png',  img_dir / 'ir'  / f'{stem}.png'),
-        (img_dir / f'{stem}.png',           img_dir / f'{stem}_ir.png'),
+        (img_dir / f'{stem}.jpg',          img_dir / f'{stem}_tir.jpg'),   # actual convention
+        (img_dir / f'{stem}.jpg',          img_dir / f'{stem}_ir.jpg'),
+        (img_dir / 'rgb' / f'{stem}.jpg',  img_dir / 'ir' / f'{stem}.jpg'),
+        (img_dir / f'{stem}.png',          img_dir / f'{stem}_tir.png'),
     ]
     for rgb_p, ir_p in candidates:
         if rgb_p.exists() and ir_p.exists():
@@ -48,7 +48,9 @@ def load_pairs(data_root: Path, n: int):
     img_dir   = data_root / 'test' / 'testMatchedImg'
     pairs = []
     for label_file in sorted(label_dir.glob('*.txt')):
-        stem = label_file.stem
+        # Labels are named {id}_tir.txt; image stem is just {id}
+        raw_stem = label_file.stem
+        stem = raw_stem[:-4] if raw_stem.endswith('_tir') else raw_stem
         rgb_p, ir_p = _find_pair(img_dir, stem)
         if rgb_p is None:
             continue

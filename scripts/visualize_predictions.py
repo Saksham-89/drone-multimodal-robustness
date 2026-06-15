@@ -102,10 +102,10 @@ def draw_detections(img_rgb, detections, score_thr: float):
 
 def _find_pair(img_dir: Path, stem: str):
     for rgb_p, ir_p in [
+        (img_dir / f'{stem}.jpg',          img_dir / f'{stem}_tir.jpg'),   # actual convention
+        (img_dir / f'{stem}.jpg',          img_dir / f'{stem}_ir.jpg'),
         (img_dir / 'rgb' / f'{stem}.jpg',  img_dir / 'ir' / f'{stem}.jpg'),
-        (img_dir / f'{stem}.jpg',           img_dir / f'{stem}_ir.jpg'),
-        (img_dir / 'rgb' / f'{stem}.png',  img_dir / 'ir' / f'{stem}.png'),
-        (img_dir / f'{stem}.png',           img_dir / f'{stem}_ir.png'),
+        (img_dir / f'{stem}.png',          img_dir / f'{stem}_tir.png'),
     ]:
         if rgb_p.exists() and ir_p.exists():
             return rgb_p, ir_p
