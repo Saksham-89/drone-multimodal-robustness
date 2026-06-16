@@ -10,6 +10,10 @@
 PROJECT=/home/s3165582/thesis/drone-multimodal-robustness
 cd $PROJECT
 
+# Activate the conda environment that has PyTorch + MMRotate
+source ~/.bashrc
+conda activate thesis
+
 PYTHONPATH=$PROJECT python scripts/visualize_predictions.py \
     --config  experiments/configs/c2former_dronevehicle.py \
     --ckpt    work_dirs/c2former/epoch_24.pth \
