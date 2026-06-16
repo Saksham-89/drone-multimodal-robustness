@@ -1,0 +1,227 @@
+{
+  "dataset": "DroneVehicle-C (Corrupted)",
+  "source": "DroneVehicle test split (Sun et al., IEEE TCSVT 2022)",
+  "description": "Corrupted version of the DroneVehicle test split. Each condition applies one corruption type to one modality (RGB or TIR) while leaving the other modality clean. Annotations are identical across all conditions (labels/ directory). Generated for the thesis: 'Evaluating Multimodal Fusion Robustness in Drone-Based Object Detection Under Sensor Degradation' (TSCiT 2025).",
+  "classes": [
+    "car",
+    "truck",
+    "freight_car",
+    "bus",
+    "van"
+  ],
+  "annotation_format": "DOTA oriented bounding box (x1 y1 x2 y2 x3 y3 x4 y4 class difficult)",
+  "image_size": "840x712 (original DroneVehicle resolution, 100px white border each side)",
+  "conditions": {
+    "clean": {
+      "modality": null,
+      "corruption_type": null,
+      "severity": null,
+      "description": "Unmodified original test images"
+    },
+    "rgb_gaussian_noise_s1": {
+      "modality": "rgb",
+      "corruption_type": "gaussian_noise",
+      "severity": 1,
+      "description": "Additive Gaussian noise on RGB channel",
+      "parameters": {
+        "std": 0.08
+      }
+    },
+    "rgb_gaussian_noise_s2": {
+      "modality": "rgb",
+      "corruption_type": "gaussian_noise",
+      "severity": 2,
+      "description": "Additive Gaussian noise on RGB channel",
+      "parameters": {
+        "std": 0.12
+      }
+    },
+    "rgb_gaussian_noise_s3": {
+      "modality": "rgb",
+      "corruption_type": "gaussian_noise",
+      "severity": 3,
+      "description": "Additive Gaussian noise on RGB channel",
+      "parameters": {
+        "std": 0.18
+      }
+    },
+    "rgb_motion_blur_s1": {
+      "modality": "rgb",
+      "corruption_type": "motion_blur",
+      "severity": 1,
+      "description": "Motion blur on RGB channel",
+      "parameters": {
+        "radius": 10,
+        "std": 3
+      }
+    },
+    "rgb_motion_blur_s2": {
+      "modality": "rgb",
+      "corruption_type": "motion_blur",
+      "severity": 2,
+      "description": "Motion blur on RGB channel",
+      "parameters": {
+        "radius": 15,
+        "std": 5
+      }
+    },
+    "rgb_motion_blur_s3": {
+      "modality": "rgb",
+      "corruption_type": "motion_blur",
+      "severity": 3,
+      "description": "Motion blur on RGB channel",
+      "parameters": {
+        "radius": 15,
+        "std": 8
+      }
+    },
+    "rgb_brightness_shift_s1": {
+      "modality": "rgb",
+      "corruption_type": "brightness_shift",
+      "severity": 1,
+      "description": "Global brightness increase on RGB channel",
+      "parameters": {
+        "offset": 0.1
+      }
+    },
+    "rgb_brightness_shift_s2": {
+      "modality": "rgb",
+      "corruption_type": "brightness_shift",
+      "severity": 2,
+      "description": "Global brightness increase on RGB channel",
+      "parameters": {
+        "offset": 0.2
+      }
+    },
+    "rgb_brightness_shift_s3": {
+      "modality": "rgb",
+      "corruption_type": "brightness_shift",
+      "severity": 3,
+      "description": "Global brightness increase on RGB channel",
+      "parameters": {
+        "offset": 0.3
+      }
+    },
+    "rgb_low_contrast_s1": {
+      "modality": "rgb",
+      "corruption_type": "low_contrast",
+      "severity": 1,
+      "description": "Global contrast reduction on RGB channel",
+      "parameters": {
+        "scale": 0.4
+      }
+    },
+    "rgb_low_contrast_s2": {
+      "modality": "rgb",
+      "corruption_type": "low_contrast",
+      "severity": 2,
+      "description": "Global contrast reduction on RGB channel",
+      "parameters": {
+        "scale": 0.3
+      }
+    },
+    "rgb_low_contrast_s3": {
+      "modality": "rgb",
+      "corruption_type": "low_contrast",
+      "severity": 3,
+      "description": "Global contrast reduction on RGB channel",
+      "parameters": {
+        "scale": 0.2
+      }
+    },
+    "tir_sensor_noise_s1": {
+      "modality": "tir",
+      "corruption_type": "sensor_noise",
+      "severity": 1,
+      "description": "Additive Gaussian noise on TIR channel (thermal sensor noise)",
+      "parameters": {
+        "std": 0.15
+      }
+    },
+    "tir_sensor_noise_s2": {
+      "modality": "tir",
+      "corruption_type": "sensor_noise",
+      "severity": 2,
+      "description": "Additive Gaussian noise on TIR channel (thermal sensor noise)",
+      "parameters": {
+        "std": 0.2
+      }
+    },
+    "tir_sensor_noise_s3": {
+      "modality": "tir",
+      "corruption_type": "sensor_noise",
+      "severity": 3,
+      "description": "Additive Gaussian noise on TIR channel (thermal sensor noise)",
+      "parameters": {
+        "std": 0.35
+      }
+    },
+    "tir_blur_s1": {
+      "modality": "tir",
+      "corruption_type": "blur",
+      "severity": 1,
+      "description": "Gaussian blur on TIR channel",
+      "parameters": {
+        "gaussian_sigma": 1
+      }
+    },
+    "tir_blur_s2": {
+      "modality": "tir",
+      "corruption_type": "blur",
+      "severity": 2,
+      "description": "Gaussian blur on TIR channel",
+      "parameters": {
+        "gaussian_sigma": 2
+      }
+    },
+    "tir_blur_s3": {
+      "modality": "tir",
+      "corruption_type": "blur",
+      "severity": 3,
+      "description": "Gaussian blur on TIR channel",
+      "parameters": {
+        "gaussian_sigma": 3
+      }
+    },
+    "tir_intensity_shift_s1": {
+      "modality": "tir",
+      "corruption_type": "intensity_shift",
+      "severity": 1,
+      "description": "Global intensity shift on TIR channel (thermal baseline drift)",
+      "parameters": {
+        "offset": 0.1
+      }
+    },
+    "tir_intensity_shift_s2": {
+      "modality": "tir",
+      "corruption_type": "intensity_shift",
+      "severity": 2,
+      "description": "Global intensity shift on TIR channel (thermal baseline drift)",
+      "parameters": {
+        "offset": 0.2
+      }
+    },
+    "tir_intensity_shift_s3": {
+      "modality": "tir",
+      "corruption_type": "intensity_shift",
+      "severity": 3,
+      "description": "Global intensity shift on TIR channel (thermal baseline drift)",
+      "parameters": {
+        "offset": 0.3
+      }
+    },
+    "rgb_complete_dropout": {
+      "modality": "rgb",
+      "corruption_type": "complete_dropout",
+      "severity": null,
+      "description": "RGB channel zeroed (complete sensor failure)"
+    },
+    "tir_complete_dropout": {
+      "modality": "tir",
+      "corruption_type": "complete_dropout",
+      "severity": null,
+      "description": "TIR channel zeroed (complete sensor failure)"
+    }
+  },
+  "n_conditions": 24
+}
