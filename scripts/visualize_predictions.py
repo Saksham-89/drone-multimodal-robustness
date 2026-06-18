@@ -36,14 +36,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import src.transforms  # registers ApplyCorruption + ZeroModality  # noqa: F401
 from src.corruption.pipeline import apply_corruption
 
-# Patch for PyTorch >= 2.0 / older mmcv: _get_stream expects torch.device not int
+# Patch for PyTorch >= 2.0 / older mmcv: _get_stream expects torch.device not int.
+# Must patch both torch's module AND mmcv's already-imported reference.
 import torch.nn.parallel._functions as _torch_pf
+import mmcv.parallel._functions as _mmcv_pf
 _orig_get_stream = _torch_pf._get_stream
 def _patched_get_stream(device):
     if isinstance(device, int):
         device = torch.device('cuda', device)
     return _orig_get_stream(device)
 _torch_pf._get_stream = _patched_get_stream
+_mmcv_pf._get_stream = _patched_get_stream
 
 
 # ── Class metadata ─────────────────────────────────────────────────────────────
