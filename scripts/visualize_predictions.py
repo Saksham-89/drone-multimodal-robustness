@@ -192,7 +192,8 @@ def run_inference(wrapped_model, cfg, selected_indices: list,
         if len(collected) == len(target_set):
             break
 
-    img_infos = dataset.img_infos
+    # DroneVehicleDataset uses data_infos; fall back for other dataset classes
+    img_infos = getattr(dataset, 'data_infos', None) or getattr(dataset, 'img_infos', None)
     return collected, img_infos
 
 
@@ -315,11 +316,13 @@ def main():
     # Build per-image figures
     for idx in args.indices:
         img_info = img_infos[idx]
-        # img_info['filename'] is the RGB filename within img_prefix
-        stem = Path(img_info['filename']).stem
-        # Strip _ir suffix if present (some datasets include both in filename)
-        if stem.endswith('_ir'):
-            stem = stem[:-3]
+        # Support 'filename' or 'file_name' keys
+        fname = img_info.get('filename') or img_info.get('file_name', str(idx))
+        stem = Path(fname).stem
+        for suffix in ('_ir', '_tir'):
+            if stem.endswith(suffix):
+                stem = stem[:-len(suffix)]
+                break
 
         print(f'\nImage {idx}: {stem}')
         rgb_raw, tir_raw = load_raw_pair(img_dir, stem)
