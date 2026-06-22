@@ -13,6 +13,7 @@ dependencies:
   - numpy
   - scipy                         # required by pipeline.py (gaussian_filter for TIR blur)
   - scikit-image                  # required by imagecorruptions (brightness/contrast use skimage)
+  - opencv                        # required by imagecorruptions (cv2 import) and image IO
   - pillow
   - pyyaml
   - tqdm

@@ -1,6 +1,6 @@
 """Experiment 2 — Modality removal (RQ2).
 
-For each model × each of the 29 corruption conditions × 2 modality configs:
+For each model × each of the 23 corruption conditions × 2 modality configs:
   - rgb_only: corruption applied to relevant stream, TIR zeroed
   - tir_only: corruption applied to relevant stream, RGB zeroed
 

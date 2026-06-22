@@ -61,7 +61,7 @@ Corruptions are applied to the **test split only**, independently per modality. 
 | Gaussian Noise | σ = 0.08 | σ = 0.12 | σ = 0.18 |
 | Motion Blur | r=10, σ=3 | r=15, σ=5 | r=15, σ=8 |
 | Brightness Shift | +0.10 | +0.20 | +0.30 |
-| Low Contrast | 0.4× | 0.3× | 0.2× |
+| Low Contrast | scale 0.4 around mean | scale 0.3 around mean | scale 0.2 around mean |
 | Complete Dropout | — | — | — |
 
 ### TIR Corruptions
@@ -132,7 +132,7 @@ cd drone-multimodal-robustness
 
 # Model repos (into models/)
 git clone https://github.com/SunYM2020/UA-CMDet models/ua_cmddet
-git clone https://github.com/YuxiangTAT/C2Former  models/c2former
+git clone https://github.com/yuanmaoxun/C2Former  models/c2former
 
 # DOTA evaluation toolkit
 git clone https://github.com/CAPTAIN-WHU/DOTA_devkit
@@ -146,9 +146,41 @@ conda activate thesis
 
 > Update `pytorch-cuda` version in `environment.yml` to match your CUDA version before creating the environment.
 
-**3. Download the dataset**
+**3. Download and prepare the dataset**
 
-Download DroneVehicle from the link in the [UA-CMDet repo](https://github.com/SunYM2020/UA-CMDet) and place it under `data/DroneVehicle/`.
+Download the DroneVehicle dataset from HuggingFace (RGB + TIR pairs with OBB
+annotations). The HuggingFace mirror works from most HPC clusters; Kaggle is
+typically blocked on compute nodes.
+
+```bash
+pip install huggingface_hub
+python -c "from huggingface_hub import snapshot_download; \
+    snapshot_download(repo_id='McCheng/DroneVehicle', repo_type='dataset', \
+    local_dir='data/DroneVehicle', allow_patterns=['*test*'])"
+
+# The download arrives as a zip per split. Unzip it:
+cd data/DroneVehicle && unzip test.zip && cd ../..
+```
+
+The raw download has separate `testimg/` (TIR), `testimgr/` (RGB) and
+`testlabel/` (XML) folders. The inference configs expect paired
+`testMatchedImg/` and `testMatchedLabel/` directories instead. Generate them
+with the bundled preparation script (symlinks images, converts XML to DOTA
+TXT, so no data is duplicated):
+
+```bash
+python scripts/prepare_c2former_data.py --split test --data-root data/DroneVehicle
+```
+
+To run training as well, repeat the download and prepare steps for the
+`train` and `val` splits.
+
+By default the configs look for the dataset at `./data/DroneVehicle/`. To use
+a different location, set `DRONEVEHICLE_ROOT`:
+
+```bash
+export DRONEVEHICLE_ROOT=/path/to/DroneVehicle
+```
 
 ---
 
@@ -165,10 +197,17 @@ python experiments/exp1_corruption.py
 python experiments/exp2_modality_removal.py
 ```
 
-On the HPC cluster, use the SLURM scripts in `hpc/`:
+On the HPC cluster, use the SLURM scripts in `hpc/`. The generic scripts run all
+three models in sequence:
 ```bash
 sbatch hpc/run_exp1.sh
 sbatch hpc/run_exp2.sh
+```
+To run a single model (recommended, so jobs are smaller and can be parallelised):
+```bash
+sbatch hpc/run_exp1_early_fusion.sh
+sbatch hpc/run_exp1_c2former.sh
+sbatch hpc/run_exp1_ua_cmddet.sh
 ```
 
 ---

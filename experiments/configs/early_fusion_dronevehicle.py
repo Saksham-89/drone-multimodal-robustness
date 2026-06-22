@@ -5,7 +5,7 @@
 # (S2ANet / FAM + ODM) for a fair comparison.
 #
 # Run from project root:
-#   PYTHONPATH=/home/s3165582/thesis/drone-multimodal-robustness \
+#   PYTHONPATH=$PROJECT_ROOT \
 #   python models/c2former/tools/train.py \
 #       experiments/configs/early_fusion_dronevehicle.py \
 #       --work-dir work_dirs/early_fusion
@@ -29,7 +29,7 @@ model = dict(
         norm_cfg=dict(type='BN', requires_grad=True),
         norm_eval=True,
         style='pytorch',
-        pretrained='/home/s3165582/thesis/drone-multimodal-robustness/'
+        pretrained=os.getcwd() + '/'
                    'pretrain_weights/resnet50.pth'),
     neck=dict(
         type='FPN',
@@ -126,7 +126,11 @@ model = dict(
 
 # ── Dataset ────────────────────────────────────────────────────────────────────
 dataset_type = 'DroneVehicleDataset'
-data_root = '/home/s3165582/thesis/drone-multimodal-robustness/data/DroneVehicle/'
+import os
+data_root = os.environ.get(
+    'DRONEVEHICLE_ROOT',
+    os.path.join(os.getcwd(), 'data', 'DroneVehicle')
+) + '/'
 
 # 4-channel normalization: ImageNet RGB stats + TIR channel (mean of RGB means)
 img_norm_cfg = dict(

@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=ua_cmddet_test
-#SBATCH --partition=main-gpu
+#SBATCH --partition=ps,main-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
@@ -14,7 +14,7 @@ eval "$(conda shell.bash hook)"
 conda activate thesis
 
 cd $SLURM_SUBMIT_DIR
-export PYTHONPATH=/home/s3165582/thesis/drone-multimodal-robustness/models/ua_cmddet:$PYTHONPATH
+export PYTHONPATH=$SLURM_SUBMIT_DIR/models/ua_cmddet:$PYTHONPATH
 
 # Step 1: run inference, write predictions to pickle
 python models/ua_cmddet/tools/test.py \
@@ -25,4 +25,4 @@ python models/ua_cmddet/tools/test.py \
 # Step 2: evaluate predictions with DroneVehicle eval (polyiou-based mAP)
 python models/ua_cmddet/eval/DroneVehicleEval.py \
     --result work_dirs/ua_cmddet/test_results.pkl \
-    --ann /home/s3165582/thesis/drone-multimodal-robustness/data/DroneVehicle/test/testMatchedLabel
+    --ann $SLURM_SUBMIT_DIR/data/DroneVehicle/test/testMatchedLabel

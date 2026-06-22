@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=viz_predictions
-#SBATCH --partition=main-gpu
+#SBATCH --partition=ps,main-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G

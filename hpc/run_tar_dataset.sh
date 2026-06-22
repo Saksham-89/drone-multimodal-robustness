@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=tar_dataset
-#SBATCH --partition=main-cpu
+#SBATCH --partition=ps,main-cpu
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=16G
 #SBATCH --time=0-06:00:00
