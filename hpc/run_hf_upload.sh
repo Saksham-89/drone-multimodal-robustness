@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=hf_upload
-#SBATCH --partition=main-cpu
+#SBATCH --partition=ps,main-cpu
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=8G
 #SBATCH --time=2-00:00:00

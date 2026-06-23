@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=build_mmcv
-#SBATCH --partition=main-gpu
+#SBATCH --partition=ps,main-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=16G

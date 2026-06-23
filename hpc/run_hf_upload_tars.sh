@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=hf_upload_tars
-#SBATCH --partition=main-cpu
+#SBATCH --partition=ps,main-cpu
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=8G
 #SBATCH --time=0-12:00:00

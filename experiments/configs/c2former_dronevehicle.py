@@ -31,7 +31,7 @@ model = dict(
         norm_cfg=dict(type='BN', requires_grad=True),
         norm_eval=True,
         style='pytorch',
-        pretrained='/home/s3165582/thesis/drone-multimodal-robustness/'
+        pretrained=os.getcwd() + '/'
                    'pretrain_weights/resnet50-2stream.pth',
     ),
     neck=dict(
@@ -129,7 +129,11 @@ model = dict(
 
 # ── Dataset ────────────────────────────────────────────────────────────────────
 dataset_type = 'DroneVehicleDataset'
-data_root = '/home/s3165582/thesis/drone-multimodal-robustness/data/DroneVehicle/'
+import os
+data_root = os.environ.get(
+    'DRONEVEHICLE_ROOT',
+    os.path.join(os.getcwd(), 'data', 'DroneVehicle')
+) + '/'
 
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)

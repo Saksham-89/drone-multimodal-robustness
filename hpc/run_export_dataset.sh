@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=export_corrupted
-#SBATCH --partition=main-cpu
+#SBATCH --partition=ps,main-cpu
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
 #SBATCH --time=1-12:00:00
